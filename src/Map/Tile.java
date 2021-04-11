@@ -21,4 +21,25 @@ public class Tile {
         else if(type == TileType.Grassland) return '-';
         else return '#';
     }
+
+    public boolean containWildEngimon(){
+        // return wildEngimon != null;
+        return false;
+    }
+
+    public TileType getType(){
+        return type;
+    }
+
+    public void nullifyWildEngimon(){
+        // wildEnimon = NULL;
+    }
+
+    public void insertWildEngimon(Engimon _wildEngimon){
+        wildEngimon = _wildEngimon;
+    }
+
+    public Engimon getWildEngimon(){
+        return wildEngimon;
+    }
 }
