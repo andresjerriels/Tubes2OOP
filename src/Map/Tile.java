@@ -1,10 +1,12 @@
 // package Map;
+import Engimon.*;
 
 enum TileType {Mountain, Sea, Grassland, Tundra};
 
 public class Tile {
     private TileType type;
-    // private Engimon wildEngimon;
+    private Engimon wildEngimon;
+    private int wildEngimonAge;
 
     public Tile(char symbol){
         if(symbol == '+') this.type = TileType.Mountain;
@@ -12,7 +14,8 @@ public class Tile {
         else if(symbol == '-') this.type = TileType.Grassland;
         else if(symbol == '#') this.type = TileType.Tundra;
 
-        // wildEngimon = null;
+        wildEngimon = null;
+        wildEngimonAge = 0;
     }
 
     public char GetSymbol(){
@@ -23,8 +26,7 @@ public class Tile {
     }
 
     public boolean containWildEngimon(){
-        // return wildEngimon != null;
-        return false;
+        return wildEngimon != null;
     }
 
     public TileType getType(){
@@ -32,7 +34,8 @@ public class Tile {
     }
 
     public void nullifyWildEngimon(){
-        // wildEnimon = NULL;
+        wildEngimon = null;
+        wildEngimonAge = 0;
     }
 
     public void insertWildEngimon(Engimon _wildEngimon){
@@ -41,5 +44,29 @@ public class Tile {
 
     public Engimon getWildEngimon(){
         return wildEngimon;
+    }
+
+    public int getWildEngimonAge() {
+        return wildEngimonAge;
+    }
+
+    public void incrementWildEngimonAge(){
+        wildEngimonAge++;
+    }
+
+    public void setWildEngimon(Tile other) {
+        this.wildEngimon = other.getWildEngimon();
+        this.wildEngimonAge = other.getWildEngimonAge();
+        other.moveWildEngimon();
+    }
+
+    public void setWildEngimon(Engimon engimon) {
+        this.wildEngimon = engimon;
+        this.wildEngimonAge = 0;
+    }
+
+    public void moveWildEngimon(){
+        wildEngimon = null;
+        wildEngimonAge = 0;
     }
 }

@@ -44,6 +44,33 @@ public class EngimonFactory {
         }
     }
 
+    public static Engimon createEngimon(int species) throws Exception {
+        switch (species) {
+            case 0:
+                return new Charmamon("Wild Charmamon");
+            case 1:
+                return new Torchimon("Wild Torchimon");
+            case 2:
+                return new Pikamon("Wild Pikamon");
+            case 3:
+                return new Electromon("Wild Electromon");
+            case 4:
+                return new Molemon("Wild Molemon");   
+            case 5:
+                return new Dittimon("Wild Dittimon");
+            case 6:
+                return new Tentamon("Wild Tentamon");
+            case 7:
+                return new Tortomon("Wild Tortomon");
+            case 8:
+                return new Yetimon("Wild Yetimon");
+            case 9:
+                return new Mamomon("Wild Mamomon");
+            default:
+                throw new Exception("Invalid species");
+        }
+    }
+
     public static Engimon createEngimon(String name, String species) throws Exception {
         if (speciesMap.containsKey(species)) {
             return createEngimon(name, speciesMap.get(species));

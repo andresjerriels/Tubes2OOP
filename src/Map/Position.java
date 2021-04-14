@@ -1,4 +1,4 @@
-package Map;
+// package Map;
 
 public class Position {
     private int x;
@@ -11,14 +11,14 @@ public class Position {
 
     public int getX() {return x;}
     public int getY() {return y;}
-    public void setXY(char direction){
-        if(direction == 'w'){
+    public void setXY(String direction){
+        if(direction == "w"){
             y--;
-        } else if (direction == 'a'){
+        } else if (direction == "a"){
             x--;
-        } else if(direction == 's'){
+        } else if(direction == "s"){
             y++;
-        } else if (direction == 'd'){
+        } else if (direction == "d"){
             x++;
         }
     }
@@ -28,14 +28,14 @@ public class Position {
         y = other.getY();
     }
 
-    public void resetXY(char direction){
-        if(direction == 'w'){
+    public void resetXY(String direction){
+        if(direction == "w"){
             y++;
-        } else if (direction == 'a'){
+        } else if (direction == "a"){
             x++;
-        } else if(direction == 's'){
+        } else if(direction == "s"){
             y--;
-        } else if (direction == 'd'){
+        } else if (direction == "d"){
             x--;
         }
     }

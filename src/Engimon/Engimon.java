@@ -2,29 +2,6 @@ package Engimon;
 
 import java.util.*;
 
-enum Element { 
-    NONE(-1), FIRE(0), WATER(1), ELECTRIC(2), GROUND(3), ICE(4);
-
-    private int value;
-    final double typeAdvTable[][] = {{1, 0, 1, 0.5, 2}, 
-                                    {2, 1, 0, 1, 1},
-                                    {1, 2, 1, 0, 1.5},
-                                    {1.5, 1, 2, 1, 0},
-                                    {0, 1, 0.5, 2, 1}};
-
-    Element(int v) {
-        value = v;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public double calcTypeAdvantage(Element e) {
-        return typeAdvTable[this.value][e.getValue()];
-    }
-};
-
 /**
  * Engimon
  */
@@ -113,5 +90,27 @@ public abstract class Engimon {
         }
       
         return maxAdv;
-      }
+    }
+
+    public String getSpecies() {
+        return species;
+    }
+
+    public ArrayList<Element> getElements() {
+        return elements;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public void setCum_exp(int cum_exp) {
+        this.cum_exp = cum_exp;
+        level = cum_exp/100 + 1;
+        exp = cum_exp % 100;
+    }
 }
