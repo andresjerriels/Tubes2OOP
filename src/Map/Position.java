@@ -1,4 +1,4 @@
-// package Map;
+package Map;
 
 public class Position {
     private int x;

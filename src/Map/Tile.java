@@ -1,4 +1,4 @@
-// package Map;
+package Map;
 import Engimon.*;
 
 enum TileType {Mountain, Sea, Grassland, Tundra};
