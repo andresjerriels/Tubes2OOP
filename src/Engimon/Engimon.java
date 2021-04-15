@@ -8,7 +8,8 @@ import java.util.*;
 public abstract class Engimon {
     protected String name;
     protected String species;
-    protected String slogan;
+    // protected String slogan;
+    protected int lives;
     protected ArrayList<String> parentNames;
     protected ArrayList<String> parentSpecies;
     // protected ArrayList<Skill> skills;
@@ -33,6 +34,7 @@ public abstract class Engimon {
         level = 1;
         exp = 0;
         cum_exp = 0;
+        lives = 3;
         parentNames = new ArrayList<String>();
         parentNames.add("None");
         parentNames.add("None");
@@ -69,12 +71,46 @@ public abstract class Engimon {
                     }
                 }
 
-                
+                Engimon child = EngimonFactory.createEngimon(nm, spc);
 
+                child.setParents(this, e);
+
+            } else {
+                throw new Exception("Level parent < 4");
             }
         } else {
             throw new Exception("Cannot breed with self");
         }
+    }
+
+    public boolean isSkillLearned(Skill s) {
+        for (Skill skill : skills) {
+            if (skill.getName() == s.getName()) {
+                return true;
+            }
+        }
+        return false;
+    }
+      
+    // public boolean canLearn(Skill s) {
+    // for (auto i = elements.begin(); i != elements.end(); i++) {
+    //     for (auto j = 0; j < s.getnSkillElmt(); j++) {
+    //     if (ElementTypes[(*i)] == s.getSkillElements()[j]) {
+    //         return true;
+    //     }
+    //     }
+    // }
+    // return false;
+    // }
+
+    public double calcPowerLevel(Engimon e) {
+        double powerLvl = level * this.calcTypeAdvantage(e);
+
+        for (Skill skill : skills) {
+            powerLvl += skill.getBasePower() * skill.getMastery();
+        }
+
+        return powerLvl;
     }
 
     private double calcTypeAdvantage(Engimon e) {
