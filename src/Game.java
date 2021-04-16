@@ -1,8 +1,11 @@
 import java.util.*;
+import Map.*;
+import Engimon.*;
+import Player.*;
 public class Game {
     private Peta map;
     private Player player;
-    private bool gameOver;
+    private boolean gameOver;
 
     public void start(){
         Scanner sc = new Scanner(System.in);

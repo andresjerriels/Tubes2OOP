@@ -12,13 +12,13 @@ public class Position {
     public int getX() {return x;}
     public int getY() {return y;}
     public void setXY(String direction){
-        if(direction == "w"){
+        if(direction.equals("w")){
             y--;
-        } else if (direction == "a"){
+        } else if (direction.equals("a")){
             x--;
-        } else if(direction == "s"){
+        } else if(direction.equals("s")){
             y++;
-        } else if (direction == "d"){
+        } else if (direction.equals("d")){
             x++;
         }
     }
@@ -29,13 +29,13 @@ public class Position {
     }
 
     public void resetXY(String direction){
-        if(direction == "w"){
+        if(direction.equals("w")){
             y++;
-        } else if (direction == "a"){
+        } else if (direction.equals("a")){
             x++;
-        } else if(direction == "s"){
+        } else if(direction.equals("s")){
             y--;
-        } else if (direction == "d"){
+        } else if (direction.equals("d")){
             x--;
         }
     }

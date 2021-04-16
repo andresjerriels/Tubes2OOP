@@ -1,2 +1,1 @@
-javac Peta.java Tile.java Main.java Position.java ../Engimon/Engimon.java ../Engimon/Charmamon
-java Peta
+javac Peta.java Tile.java Main.java Position.java ..\Engimon\Charmamon.java ..\Engimon\Dittimon.java ..\Engimon\Electromon.java ..\Engimon\Element.java ..\Engimon\Engimon.java ..\Engimon\EngimonFactory.java ..\Engimon\Mamomon.java ..\Engimon\Molemon.java ..\Engimon\Pikamon.java ..\Engimon\Tentamon.java ..\Engimon\Torchimon.java ..\Engimon\Tortomon.java ..\Engimon\Yetimon.java

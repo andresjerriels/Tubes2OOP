@@ -26,7 +26,8 @@ public abstract class Engimon {
 
     public Engimon(String _name, Element elmt1, Element elmt2) {
         name = _name;
-        elements.clear();
+        elements = new ArrayList<>();
+        // elements.clear(); ini bikin null exception
         if (elmt1 != Element.NONE)
             elements.add(elmt1);
         if (elmt2 != Element.NONE)
@@ -146,6 +147,12 @@ public abstract class Engimon {
 
     public void setCum_exp(int cum_exp) {
         this.cum_exp = cum_exp;
+        level = cum_exp/100 + 1;
+        exp = cum_exp % 100;
+    }
+
+    public void addCum_exp(int amount){
+        cum_exp += amount;
         level = cum_exp/100 + 1;
         exp = cum_exp % 100;
     }
