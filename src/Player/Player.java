@@ -11,7 +11,7 @@ public class Player {
      protected final int MaxCapacity = 30;
 
      //constructor
-     Player(String starter_name, int species) {
+     public Player(String starter_name, int species) {
           Engimon starterEngimon = EngimonFactory.createEngimon(starter_name, species);
           inventoryEngimon.addToInventory(starterEngimon);
           this.activeEngimon = inventoryEngimon.getContainer().get(0);

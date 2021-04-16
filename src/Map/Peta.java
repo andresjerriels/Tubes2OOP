@@ -2,7 +2,7 @@ package Map;
 import java.util.*;
 import java.io.*;
 import Engimon.*;
-// import Player.Player;
+import Player.*;
 public class Peta{
 
     private int nWiildEngimon;
@@ -15,14 +15,14 @@ public class Peta{
     private int lvlCapslock;
     private static Random rand = new Random();
     private Map<ArrayList<Element>, Character> engimonSymbol;
-    // private Player player;
+    private Player player;
     private Engimon activeEngimon;
 
-    // nanti harusnya tambahin player
-    public Peta(String path){
+    public Peta(String path, Player _player){
         nWiildEngimon = 0;
 
-        // this.player = player;
+        player = _player;
+        activeEngimon = player.getActiveEngimon();
 
         matriksPeta = new ArrayList<ArrayList<Tile>>();
 
@@ -130,11 +130,14 @@ public class Peta{
         }
     }
 
-    public void move(String direction){
+    public void move(String direction) throws Exception{
         playerPosition.setXY(direction);
-        if(isPlayerOutOfRange() || isPlayerTileContainEngimon()){
+        if(isPlayerOutOfRange()){
             playerPosition.resetXY(direction);
-            return;
+            throw new Exception("oops, you hit an invisible wall!");
+        } else if (isPlayerTileContainEngimon()){
+            playerPosition.resetXY(direction);
+            throw new Exception("ouch, you got bitten by a wild engimon!");
         }
         activeEngimonPosition.setXY(playerPosition);
         activeEngimonPosition.resetXY(direction);
@@ -222,6 +225,7 @@ public class Peta{
         if(y != length - 1 && matriksPeta.get(y+1).get(x).containWildEngimon()) tilesWithEngimon.add(matriksPeta.get(y+1).get(x));
         if(x != 0 && matriksPeta.get(y).get(x-1).containWildEngimon()) tilesWithEngimon.add(matriksPeta.get(y).get(x-1));
         if(x != width - 1 && matriksPeta.get(y).get(x+1).containWildEngimon()) tilesWithEngimon.add(matriksPeta.get(y).get(x+1));
+        
         return tilesWithEngimon;
     }
 
@@ -237,7 +241,6 @@ public class Peta{
             }
         }
     }
-    
 
     public void initializeEngimonSymbol(){
         engimonSymbol = new HashMap<ArrayList<Element>, Character>();
@@ -282,10 +285,6 @@ public class Peta{
         temp.clear();
         temp.add(Element.ELECTRIC);
         temp.add(Element.FIRE);
-        
-        temp.clear();
-        temp.add(Element.WATER);
-        temp.add(Element.ICE);
         engimonSymbol.put(new ArrayList<Element>(temp), 'l');
         
         temp.clear();

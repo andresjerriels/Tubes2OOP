@@ -141,6 +141,10 @@ public abstract class Engimon {
         return level;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void setLevel(int level) {
         this.level = level;
     }
