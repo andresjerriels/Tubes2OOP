@@ -1,12 +1,9 @@
-// package Map;
+package Map;
 import java.util.*;
 import java.io.*;
+import Engimon.*;
 
 public class Peta{
-    public static void main(String args[]){
-        Peta peta = new Peta("../../files/map.txt");
-        peta.PrintPeta();
-    }
 
     private int nWiildEngimon;
     private int length; //panjang ke bawah
@@ -16,6 +13,8 @@ public class Peta{
     private Position playerPosition;
     private Position activeEngimonPosition;
     private int lvlCapslock;
+    private static Random rand = new Random();
+    private Map<ArrayList<Element>, Character> engimonSymbol;
 
     public Peta(String path){
         nWiildEngimon = 0;
@@ -45,9 +44,6 @@ public class Peta{
         length = matriksPeta.size();
         width = matriksPeta.get(0).size(); 
 
-        // Random spawn point player
-        Random rand = new Random();
-
         int x = rand.nextInt(width);
         int y = rand.nextInt(length);
 
@@ -55,14 +51,80 @@ public class Peta{
 
         if(x > 0) activeEngimonPosition = new Position(x-1,y);
         else activeEngimonPosition = new Position(x+1, y);
+
+        initializeEngimonSymbol();
+    }
+
+    public void initializeEngimonSymbol(){
+        engimonSymbol = new HashMap<ArrayList<Element>, Character>();
+
+        ArrayList<Element> temp = new ArrayList<Element>();
+        temp.add(Element.WATER);
+        engimonSymbol.put(temp, 'w');
+
+        temp.clear();
+        temp.add(Element.ICE);
+        engimonSymbol.put(temp, 'i');
+        
+        temp.clear();
+        temp.add(Element.FIRE);
+        engimonSymbol.put(temp, 'f');
+        
+        temp.clear();
+        temp.add(Element.GROUND);
+        engimonSymbol.put(temp, 'g');
+
+        temp.clear();
+        temp.add(Element.ELECTRIC);
+        engimonSymbol.put(temp, 'e');
+        
+        temp.clear();
+        temp.add(Element.FIRE);
+        temp.add(Element.ELECTRIC);
+        engimonSymbol.put(temp, 'l');
+
+        
+        temp.clear();
+        temp.add(Element.ICE);
+        temp.add(Element.WATER);
+        engimonSymbol.put(temp, 's');
+
+        
+        temp.clear();
+        temp.add(Element.WATER);
+        temp.add(Element.GROUND);
+        engimonSymbol.put(temp, 'n');
+
+        temp.clear();
+        temp.add(Element.ELECTRIC);
+        temp.add(Element.FIRE);
+        
+        temp.clear();
+        temp.add(Element.WATER);
+        temp.add(Element.ICE);
+        engimonSymbol.put(temp, 'l');
+        
+        temp.clear();
+        temp.add(Element.WATER);
+        temp.add(Element.ICE);
+        engimonSymbol.put(temp, 's');
+
+        temp.clear();
+        temp.add(Element.GROUND);
+        temp.add(Element.WATER);
+        engimonSymbol.put(temp, 'n');
     }
 
     public void PrintPeta(){
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < length; j++) {
-                if(playerPosition.isEqual(i, j)) System.out.print("P");
-                else if(activeEngimonPosition.isEqual(i, j)) System.out.print("X");
-                // else if (matriksPeta.get(i).get(j).containWildEngimon())
+                if(playerPosition.isEqual(i, j)) System.out.print("P ");
+                else if(activeEngimonPosition.isEqual(i, j)) System.out.print("X ");
+                else if (matriksPeta.get(i).get(j).containWildEngimon()){
+                    Engimon wildEngimon = matriksPeta.get(i).get(j).getWildEngimon();
+                    if(wildEngimon.getLevel() > lvlCapslock) System.out.println(Character.toUpperCase(engimonSymbol.get(wildEngimon.getElements())) + " ");
+                    else System.out.println(engimonSymbol.get(wildEngimon.getElements()) + " ");
+                }
                 else System.out.print(matriksPeta.get(i).get(j).GetSymbol() + " ");
             }
             System.out.println();
@@ -83,7 +145,6 @@ public class Peta{
     //      << "* P: Player    X: Active Engimon                    *\n"
 
     public void GenerateEngimon(int minLvl, int maxLvl){
-        Random rand = new Random();
 
         if(nWiildEngimon < maxWildEngimon && rand.nextInt(5) == 0){
             // random position
@@ -94,17 +155,33 @@ public class Peta{
             Tile tile = matriksPeta.get(y).get(x);
 
             if(!tile.containWildEngimon() && !playerPosition.isEqual(x, y) && !activeEngimonPosition.isEqual(x, y)){
-                if(tile.getType() == TileType.Mountain) {}
-                else if(tile.getType() == TileType.Tundra) {}
-                else if(tile.getType() == TileType.Sea) {}
-                else if(tile.getType() == TileType.Grassland) {}
+                try {
+                    if(tile.getType() == TileType.Mountain) {
+                        tile.setWildEngimon(EngimonFactory.createEngimon(rand.nextInt(2)));
+                        tile.getWildEngimon().setCum_exp(100*(level-1));
+                    }
+                    else if(tile.getType() == TileType.Tundra) {
+                        tile.setWildEngimon(EngimonFactory.createEngimon(rand.nextInt(3) + 7));
+                        tile.getWildEngimon().setCum_exp(100*(level-1));
+                    }
+                    else if(tile.getType() == TileType.Sea) {
+                        tile.setWildEngimon(EngimonFactory.createEngimon(rand.nextInt(3) + 5));
+                        tile.getWildEngimon().setCum_exp(100*(level-1));
+                    }
+                    else if(tile.getType() == TileType.Grassland) {
+                        tile.setWildEngimon(EngimonFactory.createEngimon(rand.nextInt(5) + 1));
+                        tile.getWildEngimon().setCum_exp(100*(level-1));
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
                 nWiildEngimon++;
             }
 
         }
     }
 
-    public void move(char direction){
+    public void move(String direction){
         playerPosition.setXY(direction);
         if(isPlayerOutOfRange() || isPlayerTileContainEngimon()){
             playerPosition.resetXY(direction);
@@ -132,7 +209,6 @@ public class Peta{
     }
 
     public void moveWildEngimons(){
-        Random rand = new Random();
 
         for (int i = 0; i < length; i++){
             for (int j = 0; j < width; j++){
@@ -144,26 +220,22 @@ public class Peta{
                         if(i-1 >= 0 && i < length && !matriksPeta.get(i-1).get(j).containWildEngimon() && !playerPosition.isEqual(j,i-1) 
                            && !activeEngimonPosition.isEqual(j,i-1)
                            && isSpeciesAndGroundTypeValid(matriksPeta.get(i).get(j).getWildEngimon(), matriksPeta.get(i-1).get(j))){
-                            matriksPeta.get(i-1).get(j).setWildEngimon(matriksPeta.get(i).get(j).getWildEngimonPointer());
-                            matriksPeta.get(i-1).get(j).moveWildEngimon();
+                            matriksPeta.get(i-1).get(j).setWildEngimon(matriksPeta.get(i).get(j));
                         }
                         break;
                     case 1: // ke kiri
                         if(j < width && j-1 >= 0 && !matriksPeta.get(i).get(j-1).containWildEngimon() && !playerPosition.isEqual(j-1,i) && !activeEngimonPosition.isEqual(j-1,i) && isSpeciesAndGroundTypeValid(matriksPeta.get(i).get(j).getWildEngimon(), matriksPeta.get(i).get(j-1))){
-                            matriksPeta.get(i).get(j-1).setWildEngimon(matriksPeta.get(i).get(j).getWildEngimonPointer());
-                            matriksPeta.get(i).get(j).moveWildEngimon();
+                            matriksPeta.get(i).get(j-1).setWildEngimon(matriksPeta.get(i).get(j));
                         }
                         break;
                     case 2: // ke bawah
                         if(i+1 < length && i >= 0 && !matriksPeta.get(i+1).get(j).containWildEngimon() && !playerPosition.isEqual(j,i+1) && !activeEngimonPosition.isEqual(j,i+1) && isSpeciesAndGroundTypeValid(matriksPeta.get(i).get(j).getWildEngimon(), matriksPeta.get(i+1).get(j))){
-                            matriksPeta.get(i+1).get(j).setWildEngimon(matriksPeta.get(i).get(j).getWildEngimonPointer());
-                            matriksPeta.get(i).get(j).moveWildEngimon();
+                            matriksPeta.get(i+1).get(j).setWildEngimon(matriksPeta.get(i).get(j));
                         }
                         break;
                     case 3: // ke kanan
                         if(j >= 0 && j+1 < width && !matriksPeta.get(i).get(j+1).containWildEngimon() && !playerPosition.isEqual(j+1,i) && !activeEngimonPosition.isEqual(j+1,i) && isSpeciesAndGroundTypeValid(matriksPeta.get(i).get(j).getWildEngimon(), matriksPeta.get(i).get(j+1))){
-                            matriksPeta.get(i).get(j+1).setWildEngimon(matriksPeta.get(i).get(j).getWildEngimonPointer());
-                            matriksPeta.get(i).get(j).moveWildEngimon();
+                            matriksPeta.get(i).get(j+1).setWildEngimon(matriksPeta.get(i).get(j));
                         }
                         break;
                     
@@ -175,6 +247,17 @@ public class Peta{
         }
     }
 
+    public boolean isSpeciesAndGroundTypeValid(Engimon engimon, Tile tile){
+        if((tile.getType() == TileType.Mountain && engimon.getElements().contains(Element.FIRE)) ||
+            (tile.getType() == TileType.Sea && engimon.getElements().contains(Element.WATER)) || 
+            (tile.getType() == TileType.Grassland && (engimon.getElements().contains(Element.GROUND) || engimon.getElements().contains(Element.ELECTRIC))) ||
+            (tile.getType() == TileType.Tundra && engimon.getElements().contains(Element.ICE))){
+                return true;
+        }
+
+        else return false;
+    }
+
     public void setLevelCapslock(int _lvlCapslock){
         lvlCapslock = _lvlCapslock;
     }
@@ -184,7 +267,7 @@ public class Peta{
     }
 
     public ArrayList<Tile> getTilesWithEngimonAroundPlayer(){
-        ArrayList<Tile> tilesWithEngimon;
+        ArrayList<Tile> tilesWithEngimon = new ArrayList<Tile>();
         int x = playerPosition.getX();
         int y = playerPosition.getY();
 
@@ -193,5 +276,13 @@ public class Peta{
         if(x != 0 && matriksPeta.get(y).get(x-1).containWildEngimon()) tilesWithEngimon.add(matriksPeta.get(y).get(x-1));
         if(x != width - 1 && matriksPeta.get(y).get(x+1).containWildEngimon()) tilesWithEngimon.add(matriksPeta.get(y).get(x+1));
         return tilesWithEngimon;
+    }
+
+    public void incrementEngimonsAge(){
+        for (ArrayList<Tile> arrayList : matriksPeta) {
+            for (Tile tile : arrayList) {
+                if(tile.containWildEngimon()) tile.incrementWildEngimonAge();
+            }
+        }
     }
 }
