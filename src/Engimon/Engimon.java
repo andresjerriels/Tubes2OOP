@@ -1,5 +1,7 @@
 package Engimon;
 
+import Skill.Skill;
+
 import java.util.*;
 
 /**
@@ -86,7 +88,7 @@ public abstract class Engimon {
 
     public boolean isSkillLearned(Skill s) {
         for (Skill skill : skills) {
-            if (skill.getName() == s.getName()) {
+            if (skill.getName().compareTo(s.getName())==0) {
                 return true;
             }
         }

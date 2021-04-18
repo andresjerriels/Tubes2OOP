@@ -1,6 +1,8 @@
 package Player;
 
 import Engimon.*;
+import Skill.*;
+
 import java.util.*;
 
 public class Player {
