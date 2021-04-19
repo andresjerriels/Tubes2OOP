@@ -22,7 +22,7 @@ public class Skill {
             boolean isEngimonNameOrUniqueSkill = false;
             int k = 0;
             for (; k < skillInfo.total_engimon_species(); k++) {
-                if (skillInfo.getEngimonBaseInfo()[k][1].compareTo(name) == 0) {
+                if (skillInfo.getEngimonBaseInfo()[k][0].compareTo(name) == 0) {
                     isEngimonNameOrUniqueSkill = true;
                     break;
                 }
