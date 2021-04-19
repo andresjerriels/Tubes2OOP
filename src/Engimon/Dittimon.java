@@ -1,9 +1,18 @@
 package Engimon;
 
+import Skill.InvalidSkillNameException;
+import Skill.Skill;
+
 public class Dittimon extends Engimon {
     Dittimon(String name){
         super(name, Element.WATER, Element.GROUND);
         species = "Dittimon";
+        try {
+            skills.add(new Skill("Dittimon"));
+        } catch (InvalidSkillNameException e) {
+            e.printMessage();
+            e.printStackTrace();
+        }
     }
 
     public void interact() {

@@ -86,8 +86,8 @@ public class Game {
         Engimon playerEngimon = player.getActiveEngimon();
         Engimon wildEngimon = tileWithEngimon.getWildEngimon();
 
-        int playerPowerLevel = playerEngimon.getPowerLevel(wildEngimon);
-        int wildPlayerLevel = wildEngimon.getPowerLevel(wildEngimon);
+        double playerPowerLevel = playerEngimon.getPowerLevel(wildEngimon);
+        double wildPlayerLevel = wildEngimon.getPowerLevel(wildEngimon);
 
         if(playerPowerLevel > wildPlayerLevel){
             // win
