@@ -54,29 +54,49 @@ public class Player {
      public void addToInvEngimon(Engimon engi) {
           if (!isInventoryFull()) {
                int index = 0;
-               while (engi.getElements().get(0) != inventoryEngimon.getContainer().get(index).getElements().get(0) || index == inventoryEngimon.getContainer().size()) {
+               while ((engi.getElements().get(0) != inventoryEngimon.getContainer().get(index).getElements().get(0) ||
+                    engi.getElements().get(1) != inventoryEngimon.getContainer().get(index).getElements().get(1)) && 
+               index < inventoryEngimon.getContainer().size()) {
                     index++;
                }
                //index sudah berada di tempat yg elemennya sama / akhir container
                if (index != inventoryEngimon.getContainer().size()) {
-                    while (engi.getLevel() >= inventoryEngimon.getContainer().get(index).getLevel() || index == inventoryEngimon.getContainer().size()) {
+                    while (engi.getLevel() >= inventoryEngimon.getContainer().get(index).getLevel() && index < inventoryEngimon.getContainer().size()) {
                          index++;
+                    }
+                    if (index < inventoryEngimon.getContainer().size()) {
+                         //masukkan di indeks index
+                         inventoryEngimon.getContainer().add(index, engi);
+                    }
+                    else {
+                         inventoryEngimon.getContainer().add(engi);
                     }
                }
                //else element terakhir tidak perlu ditambah lagi indeksnya
+               else {
+                    inventoryEngimon.getContainer().add(engi);
+               }
 
-               //masukkan di indeks index
-               inventoryEngimon.getContainer().add(index, engi);
           }
           else {
                //{Util.printFormatKiri("Inventory Full!");} <==== , masih belum tau gimaana printnya
           }
      }
 
-     public void addToInvSkill(String _skill) {
+     public void addToInvSkill(SkillItem _skill) {
           if (!isInventoryFull()) {
-               //nunggu skillItem dulu
-               //reminder: sort by base power
+               int index = 0;
+               while (index < inventorySkill.getContainer().size() && _skill.getSkill().getBasePower() <= inventorySkill.getContainer().get(index).getSkill().getBasePower()) {
+                    index++;
+               }
+               if (index < inventorySkill.getContainer().size()) {
+                    inventorySkill.getContainer().add(index, _skill);
+               } else {
+                    inventorySkill.getContainer().add(_skill);
+               }
+          }
+          else {
+               //{Util.printFormatKiri("Inventory Full!");} <==== , masih belum tau gimaana printnya
           }
      }
 
