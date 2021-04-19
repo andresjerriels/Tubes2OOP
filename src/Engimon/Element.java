@@ -21,4 +21,29 @@ public enum Element {
     public double calcTypeAdvantage(Element e) {
         return typeAdvTable[this.value][e.getValue()];
     }
+
+    public String getName() {
+        String elmtName = "";
+        switch (this.value) {
+            case 0:
+                elmtName = "Fire";
+                break;
+            case 1:
+                elmtName = "Water";
+                break;
+            case 2:
+                elmtName = "Electric";
+                break;
+            case 3:
+                elmtName = "Ground";
+                break;
+            case 4:
+                elmtName = "Ice";
+                break;
+            default:
+                elmtName = "None";
+                break;
+        }
+        return elmtName;
+    }
 };

@@ -14,7 +14,7 @@ public abstract class Engimon {
     protected int lives;
     protected ArrayList<String> parentNames;
     protected ArrayList<String> parentSpecies;
-    // protected ArrayList<Skill> skills;
+    protected ArrayList<Skill> skills;
     protected ArrayList<Element> elements;
     protected int level;
     protected int exp;
@@ -106,6 +106,57 @@ public abstract class Engimon {
     // return false;
     // }
 
+    public boolean canLearn(Skill s) {
+        for (Element engimonElmt : this.elements) {
+            if (s.isSkillElement(engimonElmt.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addSkill(Skill s) throws Exception {
+        if (!this.isSkillLearned(s)) {
+            if (canLearn(s)) {
+                if (this.skills.size() < 4) {
+                    this.skills.add(s);
+                    System.out.println(this.name+" learned "+s.getName());
+                } else {
+                    throw new Exception("Engimon's skill full");
+                }
+            } else {
+                throw new Exception("Engimon type is not compatible");
+            }
+        } else {
+            throw new Exception("Engimon already learned skill");
+        }
+    }
+
+    public void forgetAndLearnSkill(Skill s, int choice, Exception e) throws Exception {
+        if (e.getMessage().compareTo("Engimon's skill full") == 0) {
+            if (choice < 4){
+                System.out.println(this.name+" forgot "+this.skill.get(choice).getName());
+                this.skills.remove(choice);
+                try {
+                    this.addSkill(s);
+                } catch (Exception e1) {}
+            } else {
+                throw new Exception("Choice out of bounds");
+            }
+        } else {
+            throw new Exception("Cannot forget skill");
+        }
+    }
+
+    public void printSkills() {
+        int i = 1;
+        for (Skill s : this.skills) {
+            System.out.println(" Skill "+i+":");
+            s.printSkillInfo();
+            i++;
+        }
+    }
+
     public double calcPowerLevel(Engimon e) {
         double powerLvl = level * this.calcTypeAdvantage(e);
 
@@ -161,5 +212,23 @@ public abstract class Engimon {
         cum_exp += amount;
         level = cum_exp/100 + 1;
         exp = cum_exp % 100;
+    }
+
+    public void setParents(Engimon parent1, Engimon parent2) {
+        this.parentNames.clear();
+        this.parentNames.add(parent1.getName());
+        this.parentNames.add(parent2.getName());
+        this.parentSpecies.clear();
+        this.parentSpecies.add(parent1.getSpecies());
+        this.parentSpecies.add(parent2.getSpecies());
+    }
+
+    public boolean die() {
+        if (this.lives > 0) {
+            this.lives -= 1;
+            return false;
+        } else {
+            return true;
+        }
     }
 }
