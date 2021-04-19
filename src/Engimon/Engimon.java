@@ -44,6 +44,7 @@ public abstract class Engimon {
         parentSpecies = new ArrayList<String>();
         parentSpecies.add("None");
         parentSpecies.add("None");
+        skills = new ArrayList<Skill>();
     }
 
     public Engimon breed(Engimon e) throws Exception {
@@ -74,9 +75,17 @@ public abstract class Engimon {
                     }
                 }
 
+                Scanner sc = new Scanner(System.in);
+
+                System.out.println("You hatched a new " + spc + "!");
+                System.out.println("Please enter a name for your ");
+                System.out.print("new engimon: ");
+                nm = sc.nextLine();
                 Engimon child = EngimonFactory.createEngimon(nm, spc);
 
                 child.setParents(this, e);
+
+
 
             } else {
                 throw new Exception("Level parent < 4");
@@ -157,7 +166,7 @@ public abstract class Engimon {
         }
     }
 
-    public double calcPowerLevel(Engimon e) {
+    public double getPowerLevel(Engimon e) {
         double powerLvl = level * this.calcTypeAdvantage(e);
 
         for (Skill skill : skills) {
@@ -181,6 +190,19 @@ public abstract class Engimon {
       
         return maxAdv;
     }
+
+    public void gainExp(int xp) {
+        cum_exp += xp;
+      
+        int newLvlAdd = (exp + xp) / 100;
+        int newExp = (exp + xp) % 100;
+        exp = newExp;
+        level += newLvlAdd;
+      
+        if (newLvlAdd > 0) {
+            System.out.println(name + " Leveled up to level " + level);
+        }
+      }
 
     public String getSpecies() {
         return species;
