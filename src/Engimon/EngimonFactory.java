@@ -45,27 +45,48 @@ public class EngimonFactory {
     }
 
     public static Engimon createEngimon(int species) throws Exception {
+        Engimon e;
         switch (species) {
             case 0:
-                return new Charmamon("Wild Charmamon");
+                e = new Charmamon("Wild Charmamon");
+                e.setWild();
+                return e;
             case 1:
-                return new Torchimon("Wild Torchimon");
+                e = new Torchimon("Wild Torchimon");
+                e.setWild();
+                return e;
             case 2:
-                return new Pikamon("Wild Pikamon");
+                e = new Pikamon("Wild Pikamon");
+                e.setWild();
+                return e;
             case 3:
-                return new Electromon("Wild Electromon");
+                e = new Electromon("Wild Electromon");
+                e.setWild();
+                return e;
             case 4:
-                return new Molemon("Wild Molemon");   
+                e = new Molemon("Wild Molemon");   
+                e.setWild();
+                return e;
             case 5:
-                return new Dittimon("Wild Dittimon");
+                e = new Dittimon("Wild Dittimon");
+                e.setWild();
+                return e;
             case 6:
-                return new Tentamon("Wild Tentamon");
+                e = new Tentamon("Wild Tentamon");
+                e.setWild();
+                return e;
             case 7:
-                return new Tortomon("Wild Tortomon");
+                e = new Tortomon("Wild Tortomon");
+                e.setWild();
+                return e;
             case 8:
-                return new Yetimon("Wild Yetimon");
+                e = new Yetimon("Wild Yetimon");
+                e.setWild();
+                return e;
             case 9:
-                return new Mamomon("Wild Mamomon");
+                e = new Mamomon("Wild Mamomon");
+                e.setWild();
+                return e;
             default:
                 throw new Exception("Invalid species");
         }

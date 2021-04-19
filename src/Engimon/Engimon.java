@@ -135,7 +135,7 @@ public abstract class Engimon {
     public void forgetAndLearnSkill(Skill s, int choice, Exception e) throws Exception {
         if (e.getMessage().compareTo("Engimon's skill full") == 0) {
             if (choice < 4){
-                System.out.println(this.name+" forgot "+this.skill.get(choice).getName());
+                System.out.println(this.name+" forgot "+this.skills.get(choice).getName());
                 this.skills.remove(choice);
                 try {
                     this.addSkill(s);
@@ -221,6 +221,10 @@ public abstract class Engimon {
         this.parentSpecies.clear();
         this.parentSpecies.add(parent1.getSpecies());
         this.parentSpecies.add(parent2.getSpecies());
+    }
+
+    public void setWild() {
+        this.lives = 1;
     }
 
     public boolean die() {
