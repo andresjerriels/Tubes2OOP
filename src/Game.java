@@ -2,6 +2,8 @@ import java.util.*;
 import Map.*;
 import Engimon.*;
 import Player.*;
+import Skill.*;
+
 public class Game {
     private Peta map;
     private Player player;
@@ -9,6 +11,7 @@ public class Game {
     private Scanner sc;
 
     public void start(){
+        gameOver = false;
         sc = new Scanner(System.in);
         String command;
 
@@ -34,7 +37,7 @@ public class Game {
             map.PrintPeta();
             command = sc.nextLine();
             processCommand(command);
-        } while(!command.equals("exit"));
+        } while(!command.equals("exit") && !gameOver);
         
         sc.close();
     }
@@ -79,14 +82,67 @@ public class Game {
             throw(e);
         }
 
+        System.out.println("0");
         Engimon playerEngimon = player.getActiveEngimon();
         Engimon wildEngimon = tileWithEngimon.getWildEngimon();
+        System.out.println("pler");
 
         double playerPowerLevel = playerEngimon.getPowerLevel(wildEngimon);
-        double wildPlayerLevel = wildEngimon.getPowerLevel(wildEngimon);
+        double wildPowerLevel = wildEngimon.getPowerLevel(wildEngimon);
 
-        if(playerPowerLevel > wildPlayerLevel){
+        System.out.println(playerEngimon.getName());
+        System.out.println("Power level: " + playerPowerLevel);
+        System.out.println("                        vs                         ");
+        System.out.println(wildEngimon.getName());
+        System.out.println("Power level: " + wildPowerLevel);
+
+        if(playerPowerLevel >= wildPowerLevel){
             // win
+            String engiName;
+            System.out.println(playerEngimon.getName() + " won!!");
+            player.gainActiveEngimonExp(20*wildEngimon.getLevel());
+            System.out.println("You captured a " + wildEngimon.getSpecies());
+            System.out.println("Enter your new engimon's name: ");
+            engiName = sc.nextLine();
+            wildEngimon.setName(engiName);
+            String newSkillName = wildEngimon.getSkills().get(0).getName();
+            System.out.println("You get a skill item: " + newSkillName);
+            player.addToInvSkill(new SkillItem(1, newSkillName));
+            System.out.println("1");
+            player.addToInvEngimon(wildEngimon);
+            System.out.println("2");
+            tileWithEngimon.nullifyWildEngimon();
+            map.decrementWildEngimon();
+
+            if (playerEngimon.getCumExp() > 8000) {
+                System.out.println("Engimon's cumulative EXP has reached its limit");
+                player.removeEngimonByIndex(player.getActiveEngiIndex());
+                if (player.getInventoryEngimon().countItemInInventory() > 0) {
+                    System.out.println("Please select another active engimon");
+                    int i;
+                    System.out.println("Your Engimon(s):");
+                    player.getInventoryEngimon().printInventory();
+              
+                    System.out.println("Choose an engimon: ");
+            
+                    System.out.print("Choice: ");
+                    i = Integer.parseInt(sc.nextLine());
+                    while (i < 1 || i > player.getInventoryEngimon().countItemInInventory()) {
+                        System.out.print("Choice: ");
+                        i = Integer.parseInt(sc.nextLine());
+                    }
+            
+                    player.setActiveEngimon(i-1);
+                } else {
+                    System.out.println("You don't have any engimons left");
+                    System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * *");
+                    System.out.println("*                     GAME OVER                     *");
+                    System.out.println("*           Thank you for playing with us!          *");
+                    System.out.println("*                    See you soon!                  *");
+                    gameOver = true;
+                }
+            }
+
         } else {
             // lose
         }
@@ -112,15 +168,17 @@ public class Game {
                 engiSelection = sc.nextInt();
             } while(engiSelection < 1 || engiSelection > tiles.size());
         } else {
-            engiSelection = 0;
+            engiSelection = 1;
         }
 
         System.out.println("Wild engimon info:");
-        tiles.get(engiSelection).getWildEngimon().printInfo();
+        tiles.get(engiSelection-1).getWildEngimon().printInfo();
+
+        System.out.print("Continue battle (y/n)? ");
 
         continueSelection = sc.nextLine();
 
-        if(continueSelection != "Y"){
+        if(!continueSelection.toUpperCase().equals("Y")){
             throw(new Exception("Cancelling battle"));
         }
 

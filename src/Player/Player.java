@@ -62,9 +62,9 @@ public class Player {
      public void addToInvEngimon(Engimon engi) {
           if (!isInventoryFull()) {
                int index = 0;
-               while ((engi.getElements().get(0) != inventoryEngimon.getContainer().get(index).getElements().get(0) ||
-                    engi.getElements().get(1) != inventoryEngimon.getContainer().get(index).getElements().get(1)) && 
-               index < inventoryEngimon.getContainer().size()) {
+               while (index < inventoryEngimon.getContainer().size() && 
+                    (engi.getElements().get(0) != inventoryEngimon.getContainer().get(index).getElements().get(0) ||
+                    engi.getElements().get(1) != inventoryEngimon.getContainer().get(index).getElements().get(1))) {
                     index++;
                }
                //index sudah berada di tempat yg elemennya sama / akhir container

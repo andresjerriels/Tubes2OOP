@@ -31,10 +31,10 @@ public abstract class Engimon {
         name = _name;
         elements = new ArrayList<>();
         // elements.clear(); ini bikin null exception
-        if (elmt1 != Element.NONE)
-            elements.add(elmt1);
-        if (elmt2 != Element.NONE)
-            elements.add(elmt2);
+        // if (elmt1 != Element.NONE)
+        elements.add(elmt1);
+        // if (elmt2 != Element.NONE)
+        elements.add(elmt2);
         level = 1;
         exp = 0;
         cum_exp = 0;
@@ -246,7 +246,7 @@ public abstract class Engimon {
         System.out.println("Parent Species: " + parentSpecies.get(0));
         System.out.println("                " + parentSpecies.get(1));
         System.out.println("ELement(s): " + elements.get(0).getName());
-        if(elements.size() == 2) System.out.println(("            " + elements.get(1).getName()));
+        if(elements.get(1) != Element.NONE) System.out.println(("            " + elements.get(1).getName()));
         System.out.println("Level: " + level);
         System.out.println("Exp: " + exp);
         System.out.println("Cumulative Exp: " + cum_exp);
@@ -269,9 +269,13 @@ public abstract class Engimon {
         double maxAdv = -1;
 
         for (Element element : this.elements) {
-            for (Element element2 : otherElements) {
-                if (element.calcTypeAdvantage(element2) > maxAdv) {
-                    maxAdv = element.calcTypeAdvantage(element2);
+            if (element != Element.NONE) {
+                for (Element element2 : otherElements) {
+                    if (element2 != Element.NONE) {
+                        if (element.calcTypeAdvantage(element2) > maxAdv) {
+                            maxAdv = element.calcTypeAdvantage(element2);
+                        }
+                    }
                 }
             }
         }
@@ -310,6 +314,10 @@ public abstract class Engimon {
 
     public String getName() {
         return name;
+    }
+
+    public int getCumExp() {
+        return cum_exp;
     }
 
     public void setName(String _name) {
