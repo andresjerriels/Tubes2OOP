@@ -120,12 +120,30 @@ public class Player {
           return index;
      }
 
+     public void renameEngimon(int idx, String name) {
+          inventoryEngimon.getContainer().get(idx).setName(name);
+     }
+
      public void removeEngimonByIndex(int idx) {
           inventoryEngimon.removeByIndex(idx);
      }
 
      public void removeSkillByIndex(int idx) {
           inventorySkill.removeByIndex(idx);
+     }
+
+     public void removeNSkill(int idx, int jumlah) throws Exception{
+          if (jumlah <= inventorySkill.getContainer().get(idx).getItemAmount()) {
+               if (jumlah < inventorySkill.getContainer().get(idx).getItemAmount()) {
+                    inventorySkill.getContainer().get(idx).setAmount(inventorySkill.getContainer().get(idx).getItemAmount() - jumlah);
+               }
+               else {
+                    removeSkillByIndex(idx);
+               }
+          }
+          else {
+               throw new Exception("Jumlah item tidak cukup");
+          }
      }
 
      public void openEngimonInventory() {
