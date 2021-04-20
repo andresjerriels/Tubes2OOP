@@ -14,9 +14,17 @@ public class Player {
 
      //constructor
      public Player(String starter_name, int species) {
-          Engimon starterEngimon = EngimonFactory.createEngimon(starter_name, species);
-          inventoryEngimon.addToInventory(starterEngimon);
-          this.activeEngimon = inventoryEngimon.getContainer().get(0);
+          Engimon starterEngimon;
+          try {
+               inventoryEngimon = new Inventory<Engimon>();
+               inventorySkill = new Inventory<SkillItem>();
+               starterEngimon = EngimonFactory.createEngimon(starter_name, species);
+               inventoryEngimon.addToInventory(starterEngimon);
+               this.activeEngimon = inventoryEngimon.getContainer().get(0);
+          } catch (Exception e) {
+               e.printStackTrace();
+          }
+          
      }
 
      public Inventory<Engimon> getInventoryEngimon() {
@@ -121,6 +129,7 @@ public class Player {
      }
 
      public void openEngimonInventory() {
+          Scanner sc = new Scanner(System.in);
           String cmd;
           do {
                System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * *");
@@ -130,17 +139,19 @@ public class Player {
                //Util::printFormatKiri("- To close inventory, select 'c'");
                //Util::printFormatKiri("What do you want to do?");
                System.out.println("* ");
-               System.in.read();
+               cmd = sc.nextLine();
 
-               if (cmd != "c") {
+               if (!cmd.equals("c")) {
                     int i = Integer.parseInt(cmd);
                     if(1 <= i && i <= inventoryEngimon.getContainer().size()) inventoryEngimon.getContainer().get(i-1).printInfo();
                     else ;//Util::printFormatKiri("Number invalid");
                }
           } while (!cmd.equals("c"));
+          sc.close();
      }
 
      public void openSkillInventory() {
+          Scanner sc = new Scanner(System.in);
           String cmd;
           do {
                System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * *");
@@ -150,29 +161,30 @@ public class Player {
                //Util::printFormatKiri("- To close inventory, select 'c'");
                //Util::printFormatKiri("What do you want to do?");
                System.out.println("* ");
-               System.in.read();
+               cmd = sc.nextLine();
 
-               if (cmd != "c") {
-                    int i = Integer.parseInt(cmd);
-                    if(1 <= i && i <= inventorySkill.getContainer().size()) inventorySkill.getContainer().get(i-1).printInfo();
-                    else ;//Util::printFormatKiri("Number invalid");
-               }
+               // if (!cmd.equals("c")) {
+               //      int i = Integer.parseInt(cmd);
+               //      if(1 <= i && i <= inventorySkill.getContainer().size()) inventorySkill.getContainer().get(i-1).getSkill().printInfo();
+               //      else ;//Util::printFormatKiri("Number invalid");
+               // }
           } while (!cmd.equals("c"));
+          sc.close();
      }
 
-     public Engimon getEngiRefFromIndex(int i) {
+     public Engimon getEngiRefFromIndex(int i) throws InvalidIndexInventory {
           if ( 0 <= i && i < inventoryEngimon.countItemInInventory()) {
                return inventoryEngimon.getContainer().get(i);
           } else {
-               throw new Exception("Index out of range");
+               throw new InvalidIndexInventory();
           }
      }
 
-     public Skill getSkillRefFromIndex(int i) {
+     public SkillItem getSkillRefFromIndex(int i) throws InvalidIndexInventory {
           if ( 0 <= i && i < inventorySkill.countItemInInventory()) {
                return inventorySkill.getContainer().get(i);
           } else {
-               throw new Exception("Index out of range");
+               throw new InvalidIndexInventory();
           }
      }
 }
