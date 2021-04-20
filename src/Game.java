@@ -8,10 +8,6 @@ public class Game {
     private boolean gameOver;
     private Scanner sc;
 
-    public static void main(String args[]){
-
-    }
-
     public void start(){
         sc = new Scanner(System.in);
         String command;
@@ -19,9 +15,9 @@ public class Game {
         int engiChoice;
         
         // input pilihan engimon
-        engiChoice = sc.nextInt();
+        engiChoice = Integer.parseInt(sc.nextLine());
         while(engiChoice < 1 || engiChoice > 2){
-            engiChoice = sc.nextInt();
+            engiChoice = Integer.parseInt(sc.nextLine());
         }
 
         String engiName = sc.nextLine();
@@ -45,25 +41,25 @@ public class Game {
 
     public void processCommand(String command){
         try{
-            if(command == "w" || command == "a" || command == "s" || command == "d"){
+            if(command.equals("w") || command.equals("a") || command.equals("s") || command.equals("d")){
                 map.move(command);
-            } else if (command == "interact"){
+            } else if (command.equals("interact")){
                 player.getActiveEngimon().interact();
-            } else if(command == "exit"){
+            } else if(command.equals("exit")){
                 saveConfirmation();
-            } else if(command == "battle"){
+            } else if(command.equals("battle")){
                 battle();
-            } else if(command == "list"){
+            } else if(command.equals("list")){
 
-            } else if(command == "skills"){
+            } else if(command.equals("skills")){
                 
-            } else if(command == "engimons"){
+            } else if(command.equals("engimons")){
 
-            } else if(command == "breed"){
+            } else if(command.equals("breed")){
 
-            } else if(command == "change"){
+            } else if(command.equals("change")){
 
-            } else if(command == "learn"){
+            } else if(command.equals("learn")){
 
             }
         } catch(Exception e){
@@ -116,7 +112,7 @@ public class Game {
                 engiSelection = sc.nextInt();
             } while(engiSelection < 1 || engiSelection > tiles.size());
         } else {
-            engiSelection = 1;
+            engiSelection = 0;
         }
 
         System.out.println("Wild engimon info:");
