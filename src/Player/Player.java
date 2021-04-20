@@ -92,20 +92,43 @@ public class Player {
      }
 
      public void addToInvSkill(SkillItem _skill) {
-          if (!isInventoryFull()) {
-               int index = 0;
-               while (index < inventorySkill.getContainer().size() && _skill.getSkill().getBasePower() <= inventorySkill.getContainer().get(index).getSkill().getBasePower()) {
+          int indexFound = searchSkillItemInInventory(_skill.getSkill().getName());
+          if (indexFound == -1) { //kalo ga ketemu
+               if (!isInventoryFull()) {
+                    int index = 0;
+                    while (index < inventorySkill.getContainer().size() && _skill.getSkill().getBasePower() <= inventorySkill.getContainer().get(index).getSkill().getBasePower()) {
+                         index++;
+                    }
+                    if (index < inventorySkill.getContainer().size()) {
+                         inventorySkill.getContainer().add(index, _skill);
+                    } else {
+                         inventorySkill.getContainer().add(_skill);
+                    }
+               }
+               else {
+                    //{Util.printFormatKiri("Inventory Full!");} <==== , masih belum tau gimaana printnya
+               }
+          }
+          else { //kalo ketemu
+               inventorySkill.getContainer().get(indexFound).incrementItemAmount();
+          }
+     }
+
+     public int searchSkillItemInInventory(String skillName) {
+          int index = 0;
+          boolean found = false;
+          while (!found && index < inventorySkill.getContainer().size()) {
+               if (skillName.equals(inventorySkill.getContainer().get(index).getSkill().getName())) {
+                    found = true;
+               }
+               else {
                     index++;
                }
-               if (index < inventorySkill.getContainer().size()) {
-                    inventorySkill.getContainer().add(index, _skill);
-               } else {
-                    inventorySkill.getContainer().add(_skill);
-               }
           }
-          else {
-               //{Util.printFormatKiri("Inventory Full!");} <==== , masih belum tau gimaana printnya
+          if (!found) {
+               return -1; //kalo ga ketemu
           }
+          return index;
      }
 
      public void gainActiveEngimonExp(int exp) {
