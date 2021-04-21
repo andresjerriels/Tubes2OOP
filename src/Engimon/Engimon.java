@@ -247,6 +247,7 @@ public abstract class Engimon {
         System.out.println("                " + parentSpecies.get(1));
         System.out.println("ELement(s): " + elements.get(0).getName());
         if(elements.get(1) != Element.NONE) System.out.println(("            " + elements.get(1).getName()));
+        System.out.println("Lives: " + lives);
         System.out.println("Level: " + level);
         System.out.println("Exp: " + exp);
         System.out.println("Cumulative Exp: " + cum_exp);
@@ -320,12 +321,20 @@ public abstract class Engimon {
         return cum_exp;
     }
 
+    public int getLives() {
+        return lives;
+    }
+
     public void setName(String _name) {
         this.name = _name;
     }
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    public void setLives(int lives) {
+        this.lives = lives;
     }
 
     public void setCum_exp(int cum_exp) {
@@ -354,11 +363,19 @@ public abstract class Engimon {
     }
 
     public boolean die() {
-        if (this.lives > 0) {
+        if (this.lives > 1) {
             this.lives -= 1;
             return false;
         } else {
             return true;
         }
     }
+
+    @Override
+    public String toString() { 
+        ArrayList<Element> el = this.getElements();
+        String result = this.getName() + " (" + el.get(0).getName() + (el.get(1) != Element.NONE ? (", " + el.get(1).getName() + ")") : ")") 
+                        + " Lvl " + this.getLevel() + " " + this.getSpecies();
+        return result;
+    } 
 }

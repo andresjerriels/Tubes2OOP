@@ -73,7 +73,7 @@ public class Player {
                }
                //index sudah berada di tempat yg elemennya sama / akhir container
                if (index != inventoryEngimon.getContainer().size()) {
-                    while (engi.getLevel() >= inventoryEngimon.getContainer().get(index).getLevel() && index < inventoryEngimon.getContainer().size()) {
+                    while (index < inventoryEngimon.getContainer().size() && engi.getLevel() >= inventoryEngimon.getContainer().get(index).getLevel()) {
                          index++;
                     }
                     if (index < inventoryEngimon.getContainer().size()) {

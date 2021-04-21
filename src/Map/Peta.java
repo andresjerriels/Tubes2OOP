@@ -68,7 +68,7 @@ public class Peta{
         for (int i = 0; i < length; i++) {
             for (int j = 0; j < width; j++) {
                 if(playerPosition.isEqual(j, i)) System.out.print("P ");
-                else if(activeEngimonPosition.isEqual(j, i)) System.out.print("X ");
+                else if(player.getActiveEngimon() != null && activeEngimonPosition.isEqual(j, i)) System.out.print("X ");
                 else if (matriksPeta.get(i).get(j).containWildEngimon()){
                     Engimon wildEngimon = matriksPeta.get(i).get(j).getWildEngimon();
                     if(wildEngimon.getLevel() > lvlCapslock) System.out.print(Character.toUpperCase(engimonSymbol.get(wildEngimon.getElements())) + " ");
