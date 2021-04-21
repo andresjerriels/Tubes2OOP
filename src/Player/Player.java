@@ -24,7 +24,6 @@ public class Player {
           } catch (Exception e) {
                e.printStackTrace();
           }
-          
      }
 
      public Inventory<Engimon> getInventoryEngimon() {

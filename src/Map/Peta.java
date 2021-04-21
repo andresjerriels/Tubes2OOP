@@ -236,6 +236,9 @@ public class Peta{
                     tile.incrementWildEngimonAge();
                     if(tile.getWildEngimonAge() % 5 == 0){
                         tile.getWildEngimon().addCum_exp(100);
+                        if (tile.getWildEngimon().getCumExp() > 4000) {
+                            tile.nullifyWildEngimon();
+                        }
                     }
                 }
             }

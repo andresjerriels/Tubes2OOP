@@ -47,19 +47,23 @@ public class Game {
             if(command.equals("w") || command.equals("a") || command.equals("s") || command.equals("d")){
                 map.move(command);
             } else if (command.equals("interact")){
-                player.getActiveEngimon().interact();
+                if (player.getActiveEngimon() != null) {
+                    player.getActiveEngimon().interact();
+                } else {
+                    System.out.println("You don't have an active engimon right now");
+                }
             } else if(command.equals("exit")){
                 saveConfirmation();
             } else if(command.equals("battle")){
                 battle();
-            } else if(command.equals("list")){
+            } else if(command.equals("help")){
 
             } else if(command.equals("skills")){
                 
             } else if(command.equals("engimons")){
 
             } else if(command.equals("breed")){
-
+                breedingConfirmation();
             } else if(command.equals("change")){
                 changeActiveEngimonConfirmation();
             } else if(command.equals("learn")){
@@ -112,7 +116,7 @@ public class Game {
                 tileWithEngimon.nullifyWildEngimon();
                 map.decrementWildEngimon();
 
-                if (playerEngimon.getCumExp() > 8000) {
+                if (playerEngimon.getCumExp() > 4000) {
                     System.out.println("Engimon's cumulative EXP has reached its limit");
                     player.removeEngimonByIndex(player.getActiveEngiIndex());
                     if (player.getInventoryEngimon().countItemInInventory() > 0) {
@@ -150,6 +154,14 @@ public class Game {
                     System.out.println("Your engimon has no lives left");
                     player.removeEngimonByIndex(player.getActiveEngiIndex());
                     player.setActiveEngimonNull();
+                    if (player.getInventoryEngimon().countItemInInventory() == 0) {
+                        System.out.println("You don't have any engimons left");
+                        System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * *");
+                        System.out.println("*                     GAME OVER                     *");
+                        System.out.println("*           Thank you for playing with us!          *");
+                        System.out.println("*                    See you soon!                  *");
+                        gameOver = true;
+                    }
                 } else {
                     System.out.println("Your engimon has " + playerEngimon.getLives() + " live(s) left");
                 }
@@ -176,7 +188,7 @@ public class Game {
             }
 
             do{
-                engiSelection = sc.nextInt();
+                engiSelection = Integer.parseInt(sc.nextLine());
             } while(engiSelection < 1 || engiSelection > tiles.size());
         } else {
             engiSelection = 1;
@@ -197,32 +209,35 @@ public class Game {
     }
 
     public void breedingConfirmation() throws Exception{
-        int engi1, engi2;
-        //print list engimon
+        if(!player.isInventoryFull()){
+            if(player.getInventoryEngimon().countItemInInventory() > 1){
+                int engi1, engi2;
+                //print list engimon
+                System.out.println("Your Engimon(s):");
+                player.getInventoryEngimon().printInventory();
 
-        if(player.isInventoryFull()){
+                System.out.print("Choose your first engimon: ");
+                engi1 = Integer.parseInt(sc.nextLine());
+                System.out.print("Choose your second engimon: ");
+                engi2 = Integer.parseInt(sc.nextLine());
+    
+                try{
+                    Engimon child = player.getEngiRefFromIndex(engi1-1).breed(player.getEngiRefFromIndex(engi2-1));
+                    player.addToInvEngimon(child);
+                } catch (Exception e){
+                    throw(e);
+                } 
+            } else {
+                throw(new Exception("You only have 1 engimon.\nYou need at least 2 engimons to breed!"));
+            }
+        } else {
             throw(new Exception("Cannot breed! Inventory full!"));
-        }
-        if(player.getInventoryEngimon().getContainer().size() == 1){
-            throw(new Exception("You only have 1 engimon.\nYou need at least 2 engimons to breed!"));
-        }
-
-        System.out.print("Choose your first engimon: ");
-        engi1 = sc.nextInt();
-        System.out.print("Choose your second engimon: ");
-        engi2 = sc.nextInt();
-
-        try{
-            Engimon child = player.getEngiRefFromIndex(engi1-1).breed(player.getEngiRefFromIndex(engi2-1));
-            player.addToInvEngimon(child);
-        } catch (Exception e){
-            throw(e);
         }
     }
 
     private void changeActiveEngimonConfirmation() throws Exception {
         System.out.println("Current active engimon:");
-        System.out.println(player.getActiveEngimon());
+        System.out.println(player.getActiveEngimon() != null ? player.getActiveEngimon() : "None");
         int i;
         System.out.println("Your Engimon(s):");
         player.getInventoryEngimon().printInventory();
