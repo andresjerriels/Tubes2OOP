@@ -20,7 +20,7 @@ public class Player {
                inventorySkill = new Inventory<SkillItem>();
                starterEngimon = EngimonFactory.createEngimon(starter_name, species);
                inventoryEngimon.addToInventory(starterEngimon);
-               this.activeEngimon = inventoryEngimon.getContainer().get(0);
+               // this.activeEngimon = inventoryEngimon.getContainer().get(0);
           } catch (Exception e) {
                e.printStackTrace();
           }
@@ -39,12 +39,12 @@ public class Player {
           return this.activeEngimon;
      }
 
-     public int getMaxCapacity() {
-          return this.MaxCapacity;
+     public void setActiveEngimon(int index) {
+          this.activeEngimon = inventoryEngimon.getContainer().get(index);
      }
 
-     public void setActiveEngimon(int i) {
-          this.activeEngimon = inventoryEngimon.getContainer().get(i);
+     public int getMaxCapacity() {
+          return this.MaxCapacity;
      }
 
      public boolean isInventoryFull() { //true kalau jumlah item == maxCapacity
