@@ -67,11 +67,37 @@ public class Game {
             } else if(command.equals("change")){
                 changeActiveEngimonConfirmation();
             } else if(command.equals("learn")){
-
+                learnSkillConfirmation();
             }
         } catch(Exception e){
             System.out.println(e.getMessage());
         }
+    }
+
+    private void learnSkillConfirmation() throws Exception {
+        if (player.getInventorySkill().countItemInInventory() > 0) {
+            int engiChoice, skillChoice;
+            System.out.println("Your Engimon(s):");
+            player.getInventoryEngimon().printInventory();
+        
+            System.out.print("Choose your engimon: ");
+            engiChoice = Integer.parseInt(sc.nextLine());;
+        
+            Engimon engi = player.getEngiRefFromIndex(engiChoice-1);
+        
+            System.out.println("Your Skill Item(s):");
+            player.getInventorySkill().printInventory();
+            System.out.print("Choose a skill item: ");
+            skillChoice = Integer.parseInt(sc.nextLine());;;
+        
+            SkillItem skill = player.getSkillRefFromIndex(skillChoice-1);
+              
+            if (skill.learn(engi) == 0) {
+              player.removeSkillByIndex(skillChoice-1);
+            }
+          } else {
+            throw new Exception("*         You don't have any skill items            *");
+          }
     }
 
     public void saveConfirmation(){
@@ -249,6 +275,5 @@ public class Game {
         } else {
           throw new Exception("Index out of range");
         }
-      }
-
+    }
 }

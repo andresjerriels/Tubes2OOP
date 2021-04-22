@@ -35,12 +35,14 @@ public class SkillItem {
     }
     // Untuk digunakan dengan System.out.println()
     public String toString(){
-        return Integer.toString(amount)+" "+skill.getName();
+        return Integer.toString(amount)+" "+skill.getName() + " BP: " + skill.getBasePower();
     }
 
     // Tunggu lebi lanjut mau kyk gmn
-    public void learn(Engimon e){
-        this.decrementItemAmount();
+    public int learn(Engimon e) throws Exception {
+        e.addSkill(skill);
+        decrementItemAmount();
+        return amount;
     }
 
 }
