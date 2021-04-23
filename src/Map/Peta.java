@@ -17,6 +17,7 @@ public class Peta{
     private Map<ArrayList<Element>, Character> engimonSymbol;
     private Player player;
     private Engimon activeEngimon;
+    private int nTurn;
 
     public Peta(String path, Player _player){
         nWiildEngimon = 0;
@@ -62,6 +63,8 @@ public class Peta{
         while(nWiildEngimon < 5){
             GenerateEngimon(1, 3);
         }
+
+        nTurn = 0;
     }
 
     public void PrintPeta(){
@@ -94,15 +97,16 @@ public class Peta{
     //      << "* P: Player    X: Active Engimon                    *\n"
 
     public void GenerateEngimon(int minLvl, int maxLvl){
+        // random position
+        int x = rand.nextInt(width);
+        int y = rand.nextInt(length);
 
-        if(nWiildEngimon < maxWildEngimon && rand.nextInt(5) == 0){
-            // random position
-            int x = rand.nextInt(width);
-            int y = rand.nextInt(length);
+        int level = rand.nextInt(maxLvl - minLvl + 1) + minLvl;
+        Tile tile = matriksPeta.get(y).get(x);
 
-            int level = rand.nextInt(maxLvl - minLvl + 1) + minLvl;
-            Tile tile = matriksPeta.get(y).get(x);
+        boolean valid = false;
 
+        while(!valid){
             if(!tile.containWildEngimon() && !playerPosition.isEqual(x, y) && !activeEngimonPosition.isEqual(x, y)){
                 try {
                     if(tile.getType() == TileType.Mountain) {
@@ -121,13 +125,14 @@ public class Peta{
                         tile.setWildEngimon(EngimonFactory.createEngimon(rand.nextInt(5) + 1));
                         tile.getWildEngimon().setCum_exp(100*(level-1));
                     }
+                    valid = true;
+                    nWiildEngimon++;
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
-                nWiildEngimon++;
-            }
-
+            }            
         }
+
     }
 
     public void move(String direction) throws Exception{
@@ -143,8 +148,14 @@ public class Peta{
         activeEngimonPosition.resetXY(direction);
         // int level = activeEngimonLevel
         int level = 1;
-        GenerateEngimon(level, level + 2);
-        moveWildEngimons();
+
+        nTurn++;
+
+        if(nTurn % 4 == 0){
+            GenerateEngimon(level, level + 2);
+            moveWildEngimons();
+        }
+        
         incrementEngimonsAge();
     }
 
@@ -160,32 +171,40 @@ public class Peta{
         return playerPosition.isEqual(x, y) || activeEngimonPosition.isEqual(x, y) || matriksPeta.get(y).get(x).containWildEngimon();
     }
 
-    public void moveWildEngimons(){
+    public void moveWildEngimons() throws Exception {
 
         for (int i = 0; i < length; i++){
             for (int j = 0; j < width; j++){
-                if(matriksPeta.get(i).get(j).containWildEngimon() && rand.nextInt(2) == 1){
+                if(matriksPeta.get(i).get(j).containWildEngimon()){
                     int direction = rand.nextInt(4);
                     switch (direction)
                     {
                     case 0: // ke atas
                         if(i-1 >= 0 && i < length && !isPositionOccupied(j,i-1) && isSpeciesAndGroundTypeValid(matriksPeta.get(i).get(j).getWildEngimon(), matriksPeta.get(i-1).get(j))){
                             matriksPeta.get(i-1).get(j).setWildEngimon(matriksPeta.get(i).get(j));
+                        } else {
+                            throw new Exception("Engimon liar mencoba menempati tempatmu!");
                         }
                         break;
                     case 1: // ke kiri
                         if(j < width && j-1 >= 0 && !isPositionOccupied(j-1,i) && isSpeciesAndGroundTypeValid(matriksPeta.get(i).get(j).getWildEngimon(), matriksPeta.get(i).get(j-1))){
                             matriksPeta.get(i).get(j-1).setWildEngimon(matriksPeta.get(i).get(j));
+                        } else {
+                            throw new Exception("Engimon liar mencoba menempati tempatmu!");
                         }
                         break;
                     case 2: // ke bawah
                         if(i+1 < length && i >= 0 && !isPositionOccupied(j,i+1) && isSpeciesAndGroundTypeValid(matriksPeta.get(i).get(j).getWildEngimon(), matriksPeta.get(i+1).get(j))){
                             matriksPeta.get(i+1).get(j).setWildEngimon(matriksPeta.get(i).get(j));
+                        } else {
+                            throw new Exception("Engimon liar mencoba menempati tempatmu!");
                         }
                         break;
                     case 3: // ke kanan
                         if(j >= 0 && j+1 < width && !isPositionOccupied(j+1,i) && isSpeciesAndGroundTypeValid(matriksPeta.get(i).get(j).getWildEngimon(), matriksPeta.get(i).get(j+1))){
                             matriksPeta.get(i).get(j+1).setWildEngimon(matriksPeta.get(i).get(j));
+                        } else {
+                            throw new Exception("Engimon liar mencoba menempati tempatmu!");
                         }
                         break;
                     
