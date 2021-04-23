@@ -7,7 +7,7 @@ public class Main {
         Engimon test = EngimonFactory.createEngimon("P1", "Charmamon");
         Engimon test2 = EngimonFactory.createEngimon("P2", "Electromon");
 
-        test.printInfo();
+        test.printDetails();
 
         test.setLevel(10);
         test2.setLevel(10);
@@ -20,6 +20,6 @@ public class Main {
         test2.getSkills().get(0).setMastery(2);
 
         Engimon child = test.breed(test2);
-        test.printInfo();
+        test.printDetails();
     }
 }

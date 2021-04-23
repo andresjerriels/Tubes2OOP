@@ -57,17 +57,23 @@ public class Game {
             } else if(command.equals("battle")){
                 battle();
             } else if(command.equals("help")){
-
-            } else if(command.equals("skills")){
                 
+            } else if(command.equals("skills")){
+                player.openSkillInventory();
             } else if(command.equals("engimons")){
-
+                player.openEngimonInventory();
             } else if(command.equals("breed")){
                 breedingConfirmation();
             } else if(command.equals("change")){
                 changeActiveEngimonConfirmation();
             } else if(command.equals("learn")){
                 learnSkillConfirmation();
+            } else if (command.equals("release")) {
+
+            } else if (command.equals("rename")) {
+
+            } else if (command.equals("throw")) {
+
             }
         } catch(Exception e){
             System.out.println(e.getMessage());
@@ -221,7 +227,7 @@ public class Game {
         }
 
         System.out.println("Wild engimon info:");
-        tiles.get(engiSelection-1).getWildEngimon().printInfo();
+        tiles.get(engiSelection-1).getWildEngimon().printDetails();
 
         System.out.print("Continue battle (y/n)? ");
 

@@ -1,8 +1,9 @@
 package Skill;
 
 import Engimon.Engimon;
+import Player.InventoryItem;
 
-public class SkillItem {
+public class SkillItem implements InventoryItem {
     private Skill skill;
     private int amount;
 
@@ -43,6 +44,10 @@ public class SkillItem {
         e.addSkill(skill);
         decrementItemAmount();
         return amount;
+    }
+    
+    public void printDetails() {
+        skill.printSkillInfo();
     }
 
 }

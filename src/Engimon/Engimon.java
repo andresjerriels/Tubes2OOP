@@ -2,13 +2,14 @@ package Engimon;
 
 import java.util.*;
 
+import Player.InventoryItem;
 import Skill.Skill;
 import Skill.SkillMasteryComparator;
 
 /**
  * Engimon
  */
-public abstract class Engimon {
+public abstract class Engimon implements InventoryItem {
     protected String name;
     protected String species;
     // protected String slogan;
@@ -238,7 +239,7 @@ public abstract class Engimon {
         }
     }
 
-    public void printInfo() {
+    public void printDetails() {
         System.out.println("Name: " + name);
         System.out.println("Species: " + species);
         System.out.println("Parent Names: " + parentNames.get(0));
