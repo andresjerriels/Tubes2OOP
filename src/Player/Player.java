@@ -186,20 +186,19 @@ public class Player {
           Scanner sc = new Scanner(System.in);
           String cmd;
           do {
-               System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * *");
                inv.printInventory();
                System.out.println("- To see details, select a number");
-               System.out.println("- To close inventory, select 'c'");
+               System.out.println("- To close inventory, enter 'close'");
                System.out.println("What do you want to do?");
                System.out.print("* ");
                cmd = sc.nextLine();
 
-               if (!cmd.equals("c")) {
+               if (!cmd.equals("close")) {
                     int i = Integer.parseInt(cmd);
                     if(1 <= i && i <= inv.getContainer().size()) inv.getContainer().get(i-1).printDetails();
                     else System.out.println("Number invalid");
                }
-          } while (!cmd.equals("c"));
+          } while (!cmd.equals("close"));
      }
 
 

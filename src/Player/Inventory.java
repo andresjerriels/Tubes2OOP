@@ -52,7 +52,7 @@ public class Inventory<T> {
      public void printInventory() {
           if (container.isEmpty()) 
           {
-               //{Util.printFormatKiri("Empty");} <==== , masih belum tau gimaana printnya
+               System.out.println("Empty");
           }
           else {
                for (int i = 0; i < container.size(); i++) {

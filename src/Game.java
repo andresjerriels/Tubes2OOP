@@ -18,11 +18,14 @@ public class Game {
         int engiChoice;
         
         // input pilihan engimon
+        System.out.println("Pilih engimon (1/2)");
         engiChoice = Integer.parseInt(sc.nextLine());
         while(engiChoice < 1 || engiChoice > 2){
+            System.out.println("Pilih engimon (1/2)");
             engiChoice = Integer.parseInt(sc.nextLine());
         }
 
+        System.out.println("Enginame: ");
         String engiName = sc.nextLine();
 
         try{
