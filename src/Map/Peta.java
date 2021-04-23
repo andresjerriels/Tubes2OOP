@@ -133,6 +133,7 @@ public class Peta{
             } else {
                 x = rand.nextInt(width);
                 y = rand.nextInt(length);
+                tile = matriksPeta.get(y).get(x);
             }    
         }
 

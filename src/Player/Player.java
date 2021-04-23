@@ -87,7 +87,6 @@ public class Player {
                else {
                     inventoryEngimon.getContainer().add(engi);
                }
-
           }
           else {
                //{Util.printFormatKiri("Inventory Full!");} <==== , masih belum tau gimaana printnya

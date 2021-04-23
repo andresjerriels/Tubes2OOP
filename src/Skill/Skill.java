@@ -54,7 +54,7 @@ public class Skill {
                 // total_element_in_game digunakan karena skill diklasifikasikan berdasarkan
                 // elemen.
                 for (int i = 0; i < skillInfo.total_element_ingame(); i++) {
-                    int totalSkillInElmtArr = skillInfo.getLearnableSkill().length;
+                    int totalSkillInElmtArr = skillInfo.getLearnableSkill()[0].length;
                     for (int j = 0; j < totalSkillInElmtArr; j++) {
                         if (skillInfo.getLearnableSkill()[i][j].compareTo(name) == 0) {
                             if (!isSkillName) {

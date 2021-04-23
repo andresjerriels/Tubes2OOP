@@ -31,10 +31,23 @@ public class Game {
         try{
             player = new Player(engiName, engiChoice-1);
             map = new Peta("../files/map.txt", player);
+
+            // Data tes
+            // player.addToInvEngimon(EngimonFactory.createEngimon("1", 4));
+            // player.addToInvEngimon(EngimonFactory.createEngimon("2", 6));
+            // player.addToInvEngimon(EngimonFactory.createEngimon("3", 2));
+            // player.addToInvEngimon(EngimonFactory.createEngimon("4", 1));
+            // player.addToInvEngimon(EngimonFactory.createEngimon("5", 8));
+            // player.addToInvEngimon(EngimonFactory.createEngimon("6", 9));
+            // player.addToInvEngimon(EngimonFactory.createEngimon("7", 4));
+
+            // player.addToInvSkill(new SkillItem(1, "Storm Hammer"));
+            // player.addToInvSkill(new SkillItem(3, "Ice Spike"));
+            // player.addToInvSkill(new SkillItem(2, "Mud Storm"));
+            // player.addToInvSkill(new SkillItem(1, "Flame Punch"));
         } catch(Exception e){
             System.out.println(e.getMessage());
         }
-
 
         do{
             map.PrintPeta();
@@ -60,7 +73,7 @@ public class Game {
             } else if(command.equals("battle")){
                 battle();
             } else if(command.equals("help")){
-                
+                printHelp();
             } else if(command.equals("skills")){
                 player.openSkillInventory();
             } else if(command.equals("engimons")){
@@ -72,15 +85,33 @@ public class Game {
             } else if(command.equals("learn")){
                 learnSkillConfirmation();
             } else if (command.equals("release")) {
-
+                releaseConfirmation();
             } else if (command.equals("rename")) {
-
+                renameConfirmation();
             } else if (command.equals("throw")) {
+                throwConfirmation();
+            } else if (command.equals("save")) {
 
             }
         } catch(Exception e){
             System.out.println(e.getMessage());
         }
+    }
+
+    private void printHelp() {
+        System.out.println("w/a/s/d\t\t: Move");
+        System.out.println("interact\t: Interact with active engimon");
+        System.out.println("engimons\t: Open engimon inventory");
+        System.out.println("skills\t\t: Open skill inventory");
+        System.out.println("change\t\t: Change active engimon");
+        System.out.println("battle\t\t: Battle with wild engimon");
+        System.out.println("breed\t\t: Breed your engimons");
+        System.out.println("learn\t\t: Teach your engimon a skill");
+        System.out.println("rename\t\t: Rename your engimon");
+        System.out.println("release\t\t: Release an engimon");
+        System.out.println("throw\t\t: Throw skill items");
+        System.out.println("save\t\t: Save the game");
+        System.out.println("exit\t\t: Exit the game");
     }
 
     private void learnSkillConfirmation() throws Exception {
@@ -90,23 +121,23 @@ public class Game {
             player.getInventoryEngimon().printInventory();
         
             System.out.print("Choose your engimon: ");
-            engiChoice = Integer.parseInt(sc.nextLine());;
+            engiChoice = Integer.parseInt(sc.nextLine());
         
             Engimon engi = player.getEngiRefFromIndex(engiChoice-1);
         
             System.out.println("Your Skill Item(s):");
             player.getInventorySkill().printInventory();
             System.out.print("Choose a skill item: ");
-            skillChoice = Integer.parseInt(sc.nextLine());;;
+            skillChoice = Integer.parseInt(sc.nextLine());
         
             SkillItem skill = player.getSkillRefFromIndex(skillChoice-1);
               
             if (skill.learn(engi) == 0) {
               player.removeSkillByIndex(skillChoice-1);
             }
-          } else {
+        } else {
             throw new Exception("*         You don't have any skill items            *");
-          }
+        }
     }
 
     public void saveConfirmation(){
@@ -283,6 +314,58 @@ public class Game {
           player.setActiveEngimon(i-1);
         } else {
           throw new Exception("Index out of range");
+        }
+    }
+    
+    private void renameConfirmation() {
+        int engiChoice;
+        String newName;
+        System.out.println("Your Engimon(s):");
+        player.getInventoryEngimon().printInventory();
+    
+        System.out.print("Choose engimon to rename: ");
+        engiChoice = Integer.parseInt(sc.nextLine());
+    
+        System.out.print("Enter new name: ");
+        newName = sc.nextLine();
+        
+        player.renameEngimon(engiChoice-1, newName);
+    }
+
+    private void releaseConfirmation() throws Exception {
+        if (player.getInventoryEngimon().getContainer().size() > 1) {
+            int engiChoice;
+
+            System.out.println("Your Engimon(s):");
+            player.getInventoryEngimon().printInventory();
+
+            System.out.print("Choose engimon to release: ");
+            engiChoice = Integer.parseInt(sc.nextLine());
+
+            if (player.getEngiRefFromIndex(engiChoice-1) == player.getActiveEngimon()) {
+                player.setActiveEngimonNull();
+            }
+
+            player.removeEngimonByIndex(engiChoice-1);
+        } else {
+            throw new Exception("You only have 1 engimon");
+        }
+    }
+
+    private void throwConfirmation() throws Exception {
+        if (player.getInventorySkill().getContainer().size() > 0) {
+            int skillChoice, n;
+            System.out.println("Your Skill Item(s):");
+            player.getInventorySkill().printInventory();
+            System.out.print("Choose a skill item to throw: ");
+            skillChoice = Integer.parseInt(sc.nextLine());
+            
+            System.out.print("Enter amount: ");
+            n = Integer.parseInt(sc.nextLine());
+
+            player.removeNSkill(skillChoice-1, n);
+        } else {
+            throw new Exception("You do not have any skill items");
         }
     }
 }
