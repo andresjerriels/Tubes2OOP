@@ -149,12 +149,11 @@ public class Peta{
         }
         activeEngimonPosition.setXY(playerPosition);
         activeEngimonPosition.resetXY(direction);
-        // int level = activeEngimonLevel
-        int level = 1;
+        int level = player.getMaxEngiLevel();
 
         nTurn++;
 
-        if(nTurn % 4 == 0){
+        if(nTurn % 4 == 0 && nWiildEngimon < maxWildEngimon){
             GenerateEngimon(level, level + 2);
             moveWildEngimons();
         }

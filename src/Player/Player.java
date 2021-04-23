@@ -182,6 +182,16 @@ public class Player {
           openInventory(inventorySkill);
      }
 
+     public int getMaxEngiLevel(){
+          int max = 0;
+
+          for (Engimon engi : inventoryEngimon.getContainer()) {
+               if(engi.getLevel() > max) max = engi.getLevel();
+          }
+
+          return max;
+     }
+
      private void openInventory(Inventory<? extends InventoryItem> inv) {
           Scanner sc = new Scanner(System.in);
           String cmd;
