@@ -64,34 +64,36 @@ public class Player {
 
      public void addToInvEngimon(Engimon engi) {
           if (!isInventoryFull()) {
-               int index = 0;
-               while (index < inventoryEngimon.getContainer().size() && 
-                    (engi.getElements().get(0) != inventoryEngimon.getContainer().get(index).getElements().get(0) ||
-                    engi.getElements().get(1) != inventoryEngimon.getContainer().get(index).getElements().get(1))) {
-                    index++;
-               }
-               //index sudah berada di tempat yg elemennya sama / akhir container
-               if (index != inventoryEngimon.getContainer().size()) {
-                    while (index < inventoryEngimon.getContainer().size() && engi.getLevel() >= inventoryEngimon.getContainer().get(index).getLevel() && 
-                    (engi.getElements().get(0) == inventoryEngimon.getContainer().get(index).getElements().get(0) &&
-                    engi.getElements().get(1) == inventoryEngimon.getContainer().get(index).getElements().get(1))) {
-                         index++;
-                    }
-                    if (index < inventoryEngimon.getContainer().size()) {
-                         //masukkan di indeks index
-                         inventoryEngimon.getContainer().add(index, engi);
-                    }
-                    else {
-                         inventoryEngimon.getContainer().add(engi);
-                    }
-               }
-               //else element terakhir tidak perlu ditambah lagi indeksnya
-               else {
-                    inventoryEngimon.getContainer().add(engi);
-               }
+               // int index = 0;
+               // while (index < inventoryEngimon.getContainer().size() && 
+               //      (engi.getElements().get(0) != inventoryEngimon.getContainer().get(index).getElements().get(0) ||
+               //      engi.getElements().get(1) != inventoryEngimon.getContainer().get(index).getElements().get(1))) {
+               //      index++;
+               // }
+               // //index sudah berada di tempat yg elemennya sama / akhir container
+               // if (index != inventoryEngimon.getContainer().size()) {
+               //      while (index < inventoryEngimon.getContainer().size() && engi.getLevel() <= inventoryEngimon.getContainer().get(index).getLevel() && 
+               //      (engi.getElements().get(0) == inventoryEngimon.getContainer().get(index).getElements().get(0) &&
+               //      engi.getElements().get(1) == inventoryEngimon.getContainer().get(index).getElements().get(1))) {
+               //           index++;
+               //      }
+               //      if (index < inventoryEngimon.getContainer().size()) {
+               //           //masukkan di indeks index
+               //           inventoryEngimon.getContainer().add(index, engi);
+               //      }
+               //      else {
+               //           inventoryEngimon.getContainer().add(engi);
+               //      }
+               // }
+               // //else element terakhir tidak perlu ditambah lagi indeksnya
+               // else {
+               //      inventoryEngimon.getContainer().add(engi);
+               // }
+               inventoryEngimon.addToInventory(engi);
+               Collections.sort(inventoryEngimon.getContainer());
           }
           else {
-               //{Util.printFormatKiri("Inventory Full!");} <==== , masih belum tau gimaana printnya
+               System.out.println("Inventory Full!"); //<==== , masih belum tau gimaana printnya
           }
      }
 

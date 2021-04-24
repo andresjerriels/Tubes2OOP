@@ -36,10 +36,13 @@ public class Game {
             // player.addToInvEngimon(EngimonFactory.createEngimon("1", 4));
             // player.addToInvEngimon(EngimonFactory.createEngimon("2", 6));
             // player.addToInvEngimon(EngimonFactory.createEngimon("3", 2));
+            // player.addToInvEngimon(EngimonFactory.createEngimon("8", 0));
             // player.addToInvEngimon(EngimonFactory.createEngimon("4", 1));
             // player.addToInvEngimon(EngimonFactory.createEngimon("5", 8));
             // player.addToInvEngimon(EngimonFactory.createEngimon("6", 9));
-            // player.addToInvEngimon(EngimonFactory.createEngimon("7", 4));
+            // Engimon e = EngimonFactory.createEngimon("7", 4);
+            // e.setLevel(10);
+            // player.addToInvEngimon(e);
 
             // player.addToInvSkill(new SkillItem(1, "Storm Hammer"));
             // player.addToInvSkill(new SkillItem(3, "Ice Spike"));

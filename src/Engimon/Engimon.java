@@ -9,7 +9,7 @@ import Skill.SkillMasteryComparator;
 /**
  * Engimon
  */
-public abstract class Engimon implements InventoryItem {
+public abstract class Engimon implements InventoryItem, Comparable<Engimon> {
     protected String name;
     protected String species;
     // protected String slogan;
@@ -32,10 +32,12 @@ public abstract class Engimon implements InventoryItem {
         name = _name;
         elements = new ArrayList<>();
         // elements.clear(); ini bikin null exception
-        // if (elmt1 != Element.NONE)
-        elements.add(elmt1);
-        // if (elmt2 != Element.NONE)
-        elements.add(elmt2);
+        if (elmt1 != Element.NONE) {
+            elements.add(elmt1);
+        }
+        if (elmt2 != Element.NONE) {
+            elements.add(elmt2);
+        }
         level = 1;
         exp = 0;
         cum_exp = 0;
@@ -247,7 +249,7 @@ public abstract class Engimon implements InventoryItem {
         System.out.println("Parent Species: " + parentSpecies.get(0));
         System.out.println("                " + parentSpecies.get(1));
         System.out.println("ELement(s): " + elements.get(0).getName());
-        if(elements.get(1) != Element.NONE) System.out.println(("            " + elements.get(1).getName()));
+        if(elements.size() == 2) System.out.println(("            " + elements.get(1).getName()));
         System.out.println("Lives: " + lives);
         System.out.println("Level: " + level);
         System.out.println("Exp: " + exp);
@@ -375,8 +377,29 @@ public abstract class Engimon implements InventoryItem {
     @Override
     public String toString() { 
         ArrayList<Element> el = this.getElements();
-        String result = this.getName() + " (" + el.get(0).getName() + (el.get(1) != Element.NONE ? (", " + el.get(1).getName() + ")") : ")") 
+        String result = this.getName() + " (" + el.get(0).getName() + (elements.size() == 2 ? (", " + el.get(1).getName() + ")") : ")") 
                         + " Lvl " + this.getLevel() + " " + this.getSpecies();
         return result;
     } 
+
+    @Override
+    public int compareTo(Engimon o) {
+        if (elements.equals(o.getElements())) {
+            return Integer.compare(o.getLevel(), level);
+        } else {
+            if (elements.size() != o.getElements().size()) {
+                return Integer.compare(o.getElements().size(), elements.size());
+            } else {
+                if (elements.size() == 1) {
+                    return Integer.compare(elements.get(0).getValue(), o.getElements().get(0).getValue());
+                } else {
+                    if (elements.get(0) ==  o.getElements().get(0)) {
+                        return Integer.compare(elements.get(1).getValue(), o.getElements().get(1).getValue());
+                    } else {
+                        return Integer.compare(elements.get(0).getValue(), o.getElements().get(0).getValue());
+                    }
+                }
+            }
+        }
+    }
 }

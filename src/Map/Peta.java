@@ -280,27 +280,27 @@ public class Peta{
 
         ArrayList<Element> temp = new ArrayList<Element>();
         temp.add(Element.WATER);
-        temp.add(Element.NONE);
+        // temp.add(Element.NONE);
         engimonSymbol.put(new ArrayList<Element>(temp), 'w');
 
         temp.clear();
         temp.add(Element.ICE);
-        temp.add(Element.NONE);
+        // temp.add(Element.NONE);
         engimonSymbol.put(new ArrayList<Element>(temp), 'i');
         
         temp.clear();
         temp.add(Element.FIRE);
-        temp.add(Element.NONE);
+        // temp.add(Element.NONE);
         engimonSymbol.put(new ArrayList<Element>(temp), 'f');
         
         temp.clear();
         temp.add(Element.GROUND);
-        temp.add(Element.NONE);
+        // temp.add(Element.NONE);
         engimonSymbol.put(new ArrayList<Element>(temp), 'g');
 
         temp.clear();
         temp.add(Element.ELECTRIC);
-        temp.add(Element.NONE);
+        // temp.add(Element.NONE);
         engimonSymbol.put(new ArrayList<Element>(temp), 'e');
         
         temp.clear();
