@@ -14,50 +14,67 @@ public class Game {
     public void start(){
         gameOver = false;
         sc = new Scanner(System.in);
+        int loadcmd;
         String command;
-
-        int engiChoice;
-        
-        // input pilihan engimon
-        System.out.println("Pilih engimon (1/2)");
-        engiChoice = Integer.parseInt(sc.nextLine());
-        while(engiChoice < 1 || engiChoice > 2){
-            System.out.println("Pilih engimon (1/2)");
-            engiChoice = Integer.parseInt(sc.nextLine());
-        }
-
-        System.out.println("Enginame: ");
-        String engiName = sc.nextLine();
-
         try{
-            player = new Player(engiName, engiChoice-1);
-            map = new Peta("../files/map.txt", player);
-
-            // Data tes
-            // player.addToInvEngimon(EngimonFactory.createEngimon("1", 4));
-            // player.addToInvEngimon(EngimonFactory.createEngimon("2", 6));
-            // player.addToInvEngimon(EngimonFactory.createEngimon("3", 2));
-            // player.addToInvEngimon(EngimonFactory.createEngimon("8", 0));
-            // player.addToInvEngimon(EngimonFactory.createEngimon("4", 1));
-            // player.addToInvEngimon(EngimonFactory.createEngimon("5", 8));
-            // player.addToInvEngimon(EngimonFactory.createEngimon("6", 9));
-            // Engimon e = EngimonFactory.createEngimon("7", 4);
-            // e.setLevel(10);
-            // player.addToInvEngimon(e);
-
-            // player.addToInvSkill(new SkillItem(1, "Storm Hammer"));
-            // player.addToInvSkill(new SkillItem(3, "Ice Spike"));
-            // player.addToInvSkill(new SkillItem(2, "Mud Storm"));
-            // player.addToInvSkill(new SkillItem(1, "Flame Punch"));
+            System.out.println("1. New Game");
+            System.out.println("2. Load Game");
+            System.out.println("Pilihan (1/2)");
+            loadcmd = Integer.parseInt(sc.nextLine());
+            while(loadcmd < 1 || loadcmd > 2){
+                System.out.println("Pilihan (1/2)");
+                loadcmd = Integer.parseInt(sc.nextLine());
+            }
+    
+            if (loadcmd == 2) {
+                loadState("saveState");
+            } else {
+                int engiChoice;
+                
+                // input pilihan engimon
+                System.out.println("Pilih engimon (1/2)");
+                engiChoice = Integer.parseInt(sc.nextLine());
+                while(engiChoice < 1 || engiChoice > 2){
+                    System.out.println("Pilih engimon (1/2)");
+                    engiChoice = Integer.parseInt(sc.nextLine());
+                }
+    
+                System.out.println("Enginame: ");
+                String engiName = sc.nextLine();
+    
+                try{
+                    player = new Player(engiName, engiChoice-1);
+                    map = new Peta("../files/map.txt", player);
+    
+                    // Data tes
+                    // player.addToInvEngimon(EngimonFactory.createEngimon("1", 4));
+                    // player.addToInvEngimon(EngimonFactory.createEngimon("2", 6));
+                    // player.addToInvEngimon(EngimonFactory.createEngimon("3", 2));
+                    // player.addToInvEngimon(EngimonFactory.createEngimon("8", 0));
+                    // player.addToInvEngimon(EngimonFactory.createEngimon("4", 1));
+                    // player.addToInvEngimon(EngimonFactory.createEngimon("5", 8));
+                    // player.addToInvEngimon(EngimonFactory.createEngimon("6", 9));
+                    // Engimon e = EngimonFactory.createEngimon("7", 4);
+                    // e.setLevel(10);
+                    // player.addToInvEngimon(e);
+    
+                    // player.addToInvSkill(new SkillItem(1, "Storm Hammer"));
+                    // player.addToInvSkill(new SkillItem(3, "Ice Spike"));
+                    // player.addToInvSkill(new SkillItem(2, "Mud Storm"));
+                    // player.addToInvSkill(new SkillItem(1, "Flame Punch"));
+                } catch(Exception e){
+                    System.out.println(e.getMessage());
+                }
+            }
+    
+            do{
+                map.PrintPeta();
+                command = sc.nextLine();
+                processCommand(command);
+            } while(!command.equals("exit") && !gameOver);
         } catch(Exception e){
             System.out.println(e.getMessage());
         }
-
-        do{
-            map.PrintPeta();
-            command = sc.nextLine();
-            processCommand(command);
-        } while(!command.equals("exit") && !gameOver);
         
         sc.close();
     }
@@ -96,8 +113,6 @@ public class Game {
                 throwConfirmation();
             } else if (command.equals("save")) {
                 saveState(this.map, this.player, "saveState");
-            } else if (command.equals("load")) {
-                loadState("saveState");
             }
         } catch(Exception e){
             System.out.println(e.getMessage());
@@ -110,6 +125,7 @@ public class Game {
         data.player = pemain;
         try {
             ResourceManager.save(data, filename);
+            System.out.println("Game saved to " + filename);
         } catch (Exception e) {
             System.out.println("Tidak dapat melakukan save: "+ e.getMessage());
         }

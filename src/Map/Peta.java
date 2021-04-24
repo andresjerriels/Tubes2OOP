@@ -16,14 +16,12 @@ public class Peta implements Serializable {
     private static Random rand = new Random();
     private Map<ArrayList<Element>, Character> engimonSymbol;
     private Player player;
-    private Engimon activeEngimon;
     private int nTurn;
 
     public Peta(String path, Player _player){
         nWiildEngimon = 0;
 
         player = _player;
-        activeEngimon = player.getActiveEngimon();
 
         matriksPeta = new ArrayList<ArrayList<Tile>>();
 
