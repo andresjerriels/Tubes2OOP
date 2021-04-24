@@ -3,6 +3,7 @@ import Map.*;
 import Engimon.*;
 import Player.*;
 import Skill.*;
+import Save.*;
 
 public class Game {
     private Peta map;
@@ -94,10 +95,33 @@ public class Game {
             } else if (command.equals("throw")) {
                 throwConfirmation();
             } else if (command.equals("save")) {
-
+                saveState(this.map, this.player, "saveState");
+            } else if (command.equals("load")) {
+                loadState("saveState");
             }
         } catch(Exception e){
             System.out.println(e.getMessage());
+        }
+    }
+
+    public void saveState(Peta peta, Player pemain, String filename) throws Exception {
+        SaveData data = new SaveData();
+        data.map = peta;
+        data.player = pemain;
+        try {
+            ResourceManager.save(data, filename);
+        } catch (Exception e) {
+            System.out.println("Tidak dapat melakukan save: "+ e.getMessage());
+        }
+    }
+
+    public void loadState(String filename) throws Exception {
+        try {
+            SaveData data = (SaveData) ResourceManager.load(filename);
+            this.map = data.map;
+            this.player = data.player;
+        } catch (Exception e) {
+            System.out.println("Tidak dapat melakukan load: "+e.getMessage());
         }
     }
 
@@ -113,6 +137,7 @@ public class Game {
         System.out.println("rename\t\t: Rename your engimon");
         System.out.println("release\t\t: Release an engimon");
         System.out.println("throw\t\t: Throw skill items");
+        System.out.println("load\t\t: Load the previous game state");
         System.out.println("save\t\t: Save the game");
         System.out.println("exit\t\t: Exit the game");
     }

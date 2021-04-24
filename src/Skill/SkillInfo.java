@@ -1,6 +1,8 @@
 package Skill;
 
-public class SkillInfo {
+import java.io.Serializable;
+
+public class SkillInfo implements Serializable {
     private final String[] ElementTypes = {"Fire","Water","Electric","Ground","Ice"};
     private final String[][] EngimonBaseInfo =   {  // Enginame, UniqueSkill, EngimonElement
             {"Charmamon","Flame Whip","Fire"},

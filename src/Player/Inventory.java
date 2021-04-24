@@ -1,7 +1,8 @@
 package Player;
+import java.io.Serializable;
 import java.util.*;
 
-public class Inventory<T> {
+public class Inventory<T> implements Serializable {
      //atribut
      protected ArrayList<T> container;
 

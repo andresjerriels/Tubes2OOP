@@ -1,9 +1,11 @@
 package Map;
+import java.io.Serializable;
+
 import Engimon.*;
 
 enum TileType {Mountain, Sea, Grassland, Tundra};
 
-public class Tile {
+public class Tile implements Serializable {
     private TileType type;
     private Engimon wildEngimon;
     private int wildEngimonAge;

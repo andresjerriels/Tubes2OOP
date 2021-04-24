@@ -1,5 +1,6 @@
 package Engimon;
 
+import java.io.Serializable;
 import java.util.*;
 
 import Player.InventoryItem;
@@ -9,7 +10,7 @@ import Skill.SkillMasteryComparator;
 /**
  * Engimon
  */
-public abstract class Engimon implements InventoryItem, Comparable<Engimon> {
+public abstract class Engimon implements InventoryItem, Comparable<Engimon>, Serializable {
     protected String name;
     protected String species;
     // protected String slogan;

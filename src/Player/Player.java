@@ -3,9 +3,10 @@ package Player;
 import Engimon.*;
 import Skill.*;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Player {
+public class Player implements Serializable {
      //atribut
      protected Inventory<Engimon> inventoryEngimon;
      protected Inventory<SkillItem> inventorySkill;

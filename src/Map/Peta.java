@@ -3,7 +3,7 @@ import java.util.*;
 import java.io.*;
 import Engimon.*;
 import Player.*;
-public class Peta{
+public class Peta implements Serializable {
 
     private int nWiildEngimon;
     private int length; //panjang ke bawah
