@@ -72,7 +72,9 @@ public class Player {
                }
                //index sudah berada di tempat yg elemennya sama / akhir container
                if (index != inventoryEngimon.getContainer().size()) {
-                    while (index < inventoryEngimon.getContainer().size() && engi.getLevel() >= inventoryEngimon.getContainer().get(index).getLevel()) {
+                    while (index < inventoryEngimon.getContainer().size() && engi.getLevel() >= inventoryEngimon.getContainer().get(index).getLevel() && 
+                    (engi.getElements().get(0) == inventoryEngimon.getContainer().get(index).getElements().get(0) &&
+                    engi.getElements().get(1) == inventoryEngimon.getContainer().get(index).getElements().get(1))) {
                          index++;
                     }
                     if (index < inventoryEngimon.getContainer().size()) {
