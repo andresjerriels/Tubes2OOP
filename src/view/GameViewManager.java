@@ -63,7 +63,8 @@ public class GameViewManager {
 
     private GameMenuSubScene subSceneToHide;
 
-    private GameMenuSubScene inventorySubScene;
+    private GameMenuSubScene engimonsSubScene;
+    private GameMenuSubScene skillsSubScene;
     private GameMenuSubScene breedSubScene;
     private GameMenuSubScene learnSkillSubScene;
     private GameMenuSubScene saveSubScene;
@@ -81,7 +82,6 @@ public class GameViewManager {
     private EngimonGridPane gridPane2;
 
     private ArrayList<Node> removedTiles;
-    private Node removedTileforPlayer;
 
     private AnimationTimer gameTimer;
 
@@ -92,8 +92,11 @@ public class GameViewManager {
     }
 
     private void createSubScenes() {
-        inventorySubScene = new GameMenuSubScene();
-        gamePane.getChildren().add(inventorySubScene);
+        engimonsSubScene = new GameMenuSubScene();
+        gamePane.getChildren().add(engimonsSubScene);
+
+        skillsSubScene = new GameMenuSubScene();
+        gamePane.getChildren().add(skillsSubScene);
 
         breedSubScene = new GameMenuSubScene();
         gamePane.getChildren().add(breedSubScene);
@@ -221,7 +224,8 @@ public class GameViewManager {
         colorAdjust.setBrightness(-0.5);
         if (menuButtons.isEmpty()) {
             gridPane1.setEffect(colorAdjust);
-            createInventoryButton();
+            createEngimonsButton();
+            createSkillsButton();
             createBreedButton();
             createLearnSkillButton();
             createSaveButton();
@@ -236,18 +240,34 @@ public class GameViewManager {
         for (EngimonGameButton button : menuButtons) {
             button.setLayoutX(-676);
         }
+        if (subSceneToHide != null) {
+            subSceneToHide.moveSubScene();
+            subSceneToHide = null;
+        }
 
         menuButtons = new ArrayList<>();
     }
 
-    private void createInventoryButton() {
-        EngimonGameButton inventoryButton = new EngimonGameButton("INVENTORY");
-        addMenuButton(inventoryButton);
+    private void createEngimonsButton() {
+        EngimonGameButton engimonsButton = new EngimonGameButton("ENGIMONS");
+        addMenuButton(engimonsButton);
 
-        inventoryButton.setOnAction(new EventHandler<ActionEvent>() {
+        engimonsButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                showSubScene(inventorySubScene);
+                showSubScene(engimonsSubScene);
+            }
+        });
+    }
+
+    private void createSkillsButton() {
+        EngimonGameButton skillsButton = new EngimonGameButton("SKILLS");
+        addMenuButton(skillsButton);
+
+        skillsButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                showSubScene(skillsSubScene);
             }
         });
     }
