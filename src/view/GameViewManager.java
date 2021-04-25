@@ -342,7 +342,8 @@ public class GameViewManager {
                 try {
                     processKeypress();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    refreshMap();
+                    e.printStackTrace(System.err);
                     infoLabel.setText(e.getMessage());
                     infoSubScene.setVisible(true);
                 }
@@ -407,7 +408,7 @@ public class GameViewManager {
     }
 
 
-    private void refreshMap() throws Exception {
+    private void refreshMap() {
         gridPane2.getChildren().clear();
 
         
@@ -419,7 +420,11 @@ public class GameViewManager {
             }
         }
         createPlayer();
-        createWildEngimons();
+        try {
+            createWildEngimons();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void createBackground() {

@@ -153,11 +153,13 @@ public class Peta implements Serializable {
 
         nTurn++;
 
-        if(nTurn % 4 == 0 && nWiildEngimon < maxWildEngimon){
-            GenerateEngimon(level, level + 2);
+        if(nTurn % 4 == 0){
+            if (nWiildEngimon < maxWildEngimon) {
+                GenerateEngimon(level, level + 2);
+            }
+            moveWildEngimons();
         }
         
-        moveWildEngimons();
         incrementEngimonsAge();
     }
 
