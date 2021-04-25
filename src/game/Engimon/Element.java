@@ -46,4 +46,29 @@ public enum Element {
         }
         return elmtName;
     }
+
+    public String getImageUrl() {
+        String url = "";
+        switch (this.value) {
+            case 0:
+                url = "view/resources/elements/fire.png";
+                break;
+            case 1:
+                url = "view/resources/elements/water.png";
+                break;
+            case 2:
+                url = "view/resources/elements/electric.png";
+                break;
+            case 3:
+                url = "view/resources/elements/ground.png";
+                break;
+            case 4:
+                url = "view/resources/elements/ice.png";
+                break;
+            default:
+                url = "";
+                break;
+        }
+        return url;
+    }
 };

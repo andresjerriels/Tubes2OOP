@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import game.Engimon.Engimon;
+import game.Engimon.EngimonFactory;
 import game.Map.Peta;
 import game.Map.Position;
 import game.Map.Tile;
@@ -14,17 +15,21 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 import model.EngimonButton;
 import model.EngimonGameButton;
 import model.EngimonGridPane;
+import model.EngimonInventoryItem;
 import model.GameMenuSubScene;
 import model.InfoLabel;
 
@@ -91,9 +96,8 @@ public class GameViewManager {
         createKeyListeners();
     }
 
-    private void createSubScenes() {
-        engimonsSubScene = new GameMenuSubScene();
-        gamePane.getChildren().add(engimonsSubScene);
+    private void createSubScenes() throws Exception {
+        createEngimonSubscene();
 
         skillsSubScene = new GameMenuSubScene();
         gamePane.getChildren().add(skillsSubScene);
@@ -108,6 +112,52 @@ public class GameViewManager {
         gamePane.getChildren().add(saveSubScene);
         
         createInfoSubscene();
+    }
+
+    private void createEngimonSubscene() throws Exception {
+        engimonsSubScene = new GameMenuSubScene();
+
+        ScrollPane engiScroll = new ScrollPane();
+        engiScroll.setPrefHeight(550);
+        engiScroll.setPrefWidth(550);
+        engiScroll.setLayoutX(25);
+        engiScroll.setLayoutY(25);
+        engiScroll.setStyle("-fx-background-color: transparent");
+
+        GridPane engiGrid = new GridPane();
+        // engiGrid.setPrefHeight(550);
+        // engiGrid.setPrefHeight(550);
+        engiGrid.setHgap(0);
+        engiGrid.setVgap(0);
+        
+        // for (int i = 0; i < 5; i++) {
+        //     engiGrid.getColumnConstraints().add(new ColumnConstraints(100));
+        // }
+        // for (int i = 0; i < 5; i++) {
+        //     engiGrid.getRowConstraints().add(new RowConstraints(100));
+        // }
+        
+        EngimonInventoryItem e = new EngimonInventoryItem(player.getActiveEngimon());
+
+        // GridPane.setConstraints(e, 0, 0);
+        // engiGrid.getChildren().add(e);
+
+        engiGrid.add(new EngimonInventoryItem(player.getActiveEngimon()), 0, 0);
+        engiGrid.add(new EngimonInventoryItem(EngimonFactory.createEngimon(0)), 0, 1);
+        engiGrid.add(new EngimonInventoryItem(EngimonFactory.createEngimon(0)), 0, 2);
+        engiGrid.add(new EngimonInventoryItem(EngimonFactory.createEngimon(0)), 0, 3);
+        engiGrid.add(new EngimonInventoryItem(EngimonFactory.createEngimon(0)), 0, 4);
+        engiGrid.add(new EngimonInventoryItem(EngimonFactory.createEngimon(0)), 0, 5);
+        engiGrid.add(new EngimonInventoryItem(EngimonFactory.createEngimon(0)), 0, 6);
+        engiGrid.add(new EngimonInventoryItem(EngimonFactory.createEngimon(0)), 1, 0);
+
+        engiScroll.setContent(engiGrid);
+        engiGrid.setLayoutX(0);
+        engiGrid.setLayoutY(0);
+
+        engimonsSubScene.getPane().getChildren().add(engiScroll);
+
+        gamePane.getChildren().add(engimonsSubScene);
     }
 
     private void createInfoSubscene() {
@@ -187,6 +237,7 @@ public class GameViewManager {
         this.menuStage = menuStage;
         this.menuStage.hide();
         player = new Player(chosenEngimon);
+        player.setActiveEngimon(0);
         createBackground();
         createMap();
         createPlayer();
@@ -201,6 +252,7 @@ public class GameViewManager {
         menuButton = new EngimonButton(150, 49,"MENU");
         menuButton.setLayoutX(850);
         menuButton.setLayoutY(25);
+        menuButton.setOpacity(0.3);
 
         menuButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
