@@ -39,4 +39,12 @@ public class InfoLabel extends Label {
             setFont(Font.font("Verdana", 23));
         }
     }
+
+    public void setFontSize(int size) {
+        try {
+            setFont(Font.loadFont(new FileInputStream(FONT_PATH), size));
+        } catch (FileNotFoundException e) {
+            setFont(Font.font("Verdana", size));
+        }
+    }
 }

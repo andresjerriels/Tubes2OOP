@@ -1,10 +1,14 @@
 package view;
 
-import Engimon.Charmamon;
-import Engimon.Engimon;
-import Map.Position;
-import Map.Tile;
-import Player.Player;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import game.Engimon.Engimon;
+import game.Map.Peta;
+import game.Map.Position;
+import game.Map.Tile;
+import game.Player.Player;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -18,13 +22,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import model.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import static Engimon.EngimonFactory.createEngimon;
+import model.EngimonButton;
+import model.EngimonGameButton;
+import model.EngimonGridPane;
+import model.GameMenuSubScene;
+import model.InfoLabel;
 
 public class GameViewManager {
 
@@ -42,6 +44,7 @@ public class GameViewManager {
     private int lvlCapslock;
     private Player player;
     private Position playerPos;
+    private Peta map;
 
 
     private static final String PLAYER_UP = "view/resources/character/up1.png";
@@ -60,11 +63,13 @@ public class GameViewManager {
 
     private GameMenuSubScene subSceneToHide;
 
-    private GameMenuSubScene interactSubScene;
     private GameMenuSubScene inventorySubScene;
     private GameMenuSubScene breedSubScene;
     private GameMenuSubScene learnSkillSubScene;
     private GameMenuSubScene saveSubScene;
+    private GameMenuSubScene infoSubScene;
+
+    private InfoLabel infoLabel;
 
     private static final int GAME_WIDTH = 1024;
     private static final int GAME_HEIGHT = 768;
@@ -87,9 +92,6 @@ public class GameViewManager {
     }
 
     private void createSubScenes() {
-        interactSubScene = new GameMenuSubScene();
-        gamePane.getChildren().add(interactSubScene);
-
         inventorySubScene = new GameMenuSubScene();
         gamePane.getChildren().add(inventorySubScene);
 
@@ -101,6 +103,35 @@ public class GameViewManager {
 
         saveSubScene = new GameMenuSubScene();
         gamePane.getChildren().add(saveSubScene);
+        
+        createInfoSubscene();
+    }
+
+    private void createInfoSubscene() {
+        infoSubScene = new GameMenuSubScene();
+        infoSubScene.setSize(600, 150);
+        infoSubScene.setLayoutX(GAME_WIDTH/5);
+        infoSubScene.setLayoutY(GAME_HEIGHT/5);
+        infoLabel = new InfoLabel("");
+        infoLabel.setFontSize(12);
+        infoLabel.setLayoutX(25);
+        infoLabel.setLayoutY(25);
+        infoSubScene.getPane().getChildren().add(infoLabel);
+
+        EngimonButton backButton = new EngimonButton("BACK");
+        backButton.setLayoutX(200);
+        backButton.setLayoutY(85);
+
+        backButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                infoSubScene.setVisible(false);
+            }
+        });
+        infoSubScene.getPane().getChildren().add(backButton);
+
+        gamePane.getChildren().add(infoSubScene);
+        infoSubScene.setVisible(false);
     }
 
     private void showSubScene(GameMenuSubScene subScene) {
@@ -149,9 +180,10 @@ public class GameViewManager {
         gameStage.setScene(gameScene);
     }
 
-    public void createNewGame(Stage menuStage) {
+    public void createNewGame(Stage menuStage, Engimon chosenEngimon) throws Exception {
         this.menuStage = menuStage;
         this.menuStage.hide();
+        player = new Player(chosenEngimon);
         createBackground();
         createMap();
         createPlayer();
@@ -189,7 +221,6 @@ public class GameViewManager {
         colorAdjust.setBrightness(-0.5);
         if (menuButtons.isEmpty()) {
             gridPane1.setEffect(colorAdjust);
-            createInteractButton();
             createInventoryButton();
             createBreedButton();
             createLearnSkillButton();
@@ -207,18 +238,6 @@ public class GameViewManager {
         }
 
         menuButtons = new ArrayList<>();
-    }
-
-    private void createInteractButton() {
-        EngimonGameButton startButton = new EngimonGameButton("INTERACT");
-        addMenuButton(startButton);
-
-        startButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                showSubScene(interactSubScene);
-            }
-        });
     }
 
     private void createInventoryButton() {
@@ -282,17 +301,20 @@ public class GameViewManager {
         });
     }
 
-    private void createWildEngimons() {
-        removedTiles = new ArrayList<>();
+    private void createWildEngimons() throws Exception {
 
-        Engimon wild = null;
-        try {
-            wild = createEngimon("wild", 0);
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (int i = 0; i < map.getLength(); i++) {
+            for (int j = 0; j < map.getWidth(); j++) {
+                Tile curTile = map.getTile(i, j);
+                if (curTile.containWildEngimon()) {
+                    Engimon eng = curTile.getWildEngimon();
+                    ImageView engimon = eng.getSprite();
+                    gridPane2.replaceMapWithImage(j, i, engimon);
+                }
+            }
         }
-        ImageView engimon = new ImageView(wild.getImgUrl());
-        removedTiles.add(gridPane2.replaceMapWithEngimon(4, 8,engimon));
+
+        map.PrintPeta();
     }
 
     private void placeBackTiles() {
@@ -305,36 +327,37 @@ public class GameViewManager {
     }
 
     private void createPlayer() {
-        player = new Player("Martin", 0);
-        playerPos = new Position(6, 8);
-        removedTileforPlayer = gridPane2.replaceMapWithEngimon(playerPos.getX(),playerPos.getY(), new ImageView(player.getImgUrl()));
+        // player = new Player("Martin", 0);
+        playerPos = map.getPlayerPosition();
+        gridPane2.replaceMapWithImage(playerPos.getX(),playerPos.getY(), new ImageView(player.getImgUrl()));
+        if (player.getActiveEngimon() != null) {
+            gridPane2.replaceMapWithImage(map.getActiveEngiPosition().getX(), map.getActiveEngiPosition().getY(), player.getActiveEngimon().getSprite());
+        }
     }
 
     private void createGameLoop() {
         gameTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                movePlayer();
+                try {
+                    processKeypress();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    infoLabel.setText(e.getMessage());
+                    infoSubScene.setVisible(true);
+                }
             }
         };
 
         gameTimer.start();
     }
 
-    private boolean isPlayerOutOfRange(){
-        return playerPos.getX() < 0 || playerPos.getX() >= MAP_WIDTH || playerPos.getY() < 0 || playerPos.getY() >= MAP_HEIGHT;
-    }
 
-
-    private void movePlayer() {
+    private void processKeypress() throws Exception {
         if (removeActiveKey("A")) {
             player.setImgUrl(PLAYER_LEFT);
-            playerPos.setXY("a");
-            if (isPlayerOutOfRange()) {
-                playerPos.resetXY("a");
-            }
-            gridPane2.replaceMapWithNode(removedTileforPlayer);
-            removedTileforPlayer = gridPane2.replaceMapWithEngimon(playerPos.getX(), playerPos.getY(), new ImageView(player.getImgUrl()));
+            map.move("a");
+            refreshMap();
 //            if (player.getLayoutX() > 0) {
 //                player.setLayoutX(player.getLayoutX() - 10);
 //            }
@@ -342,12 +365,8 @@ public class GameViewManager {
 
         if (removeActiveKey("D")) {
             player.setImgUrl(PLAYER_RIGHT);
-            playerPos.setXY("d");
-            if (isPlayerOutOfRange()) {
-                playerPos.resetXY("d");
-            }
-            gridPane2.replaceMapWithNode(removedTileforPlayer);
-            removedTileforPlayer = gridPane2.replaceMapWithEngimon(playerPos.getX(), playerPos.getY(), new ImageView(player.getImgUrl()));
+            map.move("d");
+            refreshMap();
 //            if (player.getLayoutX() < 994) {
 //                player.setLayoutX(player.getLayoutX() + 10);
 //            }
@@ -355,12 +374,8 @@ public class GameViewManager {
 
         if(removeActiveKey("W")) {
             player.setImgUrl(PLAYER_UP);
-            playerPos.setXY("w");
-            if (isPlayerOutOfRange()) {
-                playerPos.resetXY("w");
-            }
-            gridPane2.replaceMapWithNode(removedTileforPlayer);
-            removedTileforPlayer = gridPane2.replaceMapWithEngimon(playerPos.getX(), playerPos.getY(), new ImageView(player.getImgUrl()));
+            map.move("w");
+            refreshMap();
 //            if (player.getLayoutY() > 0) {
 //                player.setLayoutY(player.getLayoutY() - 10);
 //            }
@@ -368,110 +383,77 @@ public class GameViewManager {
 
         if (removeActiveKey("S")) {
             player.setImgUrl(PLAYER_DOWN);
-            playerPos.setXY("s");
-            if (isPlayerOutOfRange()) {
-                playerPos.resetXY("s");
-            }
-            gridPane2.replaceMapWithNode(removedTileforPlayer);
-            removedTileforPlayer = gridPane2.replaceMapWithEngimon(playerPos.getX(), playerPos.getY(), new ImageView(player.getImgUrl()));
+            map.move("s");
+            refreshMap();
 //            if (player.getLayoutY() < 728) {
 //                player.setLayoutY(player.getLayoutY() + 10);
 //            }
         }
+
+        if (removeActiveKey("I")) {
+            if (infoSubScene.isVisible()) {
+                infoSubScene.setVisible(false);
+            } else {
+                if (player.getActiveEngimon() != null) {
+                    infoLabel.setText(player.getActiveEngimon().interact());
+                } else {
+                    System.out.println("You don't have an active engimon right now");
+                    infoLabel.setText("You don't have an active engimon right now");
+                }
+                infoSubScene.setVisible(true);
+            }
+        }
+        
+    }
+
+
+    private void refreshMap() throws Exception {
+        gridPane2.getChildren().clear();
+
+        
+        for (int j = 0; j <= map.getLength(); j++) {
+            for (int i = 0; i <= map.getWidth(); i++) {
+                ImageView block = new ImageView(generateEmptyImage(64,64));
+                GridPane.setConstraints(block, i, j);
+                gridPane2.getChildren().add(block);
+            }
+        }
+        createPlayer();
+        createWildEngimons();
     }
 
     private void createBackground() {
+        map = new Peta("./src/game/files/map.txt", player);
         gridPane1 = new EngimonGridPane();
 
-        int x = 6;
-        for (int j = 0; j <= 5; j++) {
-            for (int i = 0; i <= x; i++) {
-                ImageView bgSea = new ImageView(SEA_TILE);
-                GridPane.setConstraints(bgSea, i, j);
-                gridPane1.getChildren().add(bgSea);
-            }
-            x--;
-        }
-
-        x = 1;
-        for (int j = 6; j <= 11; j++) {
-            for (int i = 0; i <= x; i++) {
-                ImageView bgTundra = new ImageView(TUNDRA_TILE);
-                GridPane.setConstraints(bgTundra, i, j);
-                gridPane1.getChildren().add(bgTundra);
-            }
-            x++;
-        }
-
-        x = 7;
-        for (int j = 0; j <= 5; j++) {
-            if (x == 1) {
-                break;
-            } else {
-                for (int i = x; i < 16-x; i++) {
-                    ImageView bgGrassland = new ImageView(GRASSLAND_TILE);
-                    GridPane.setConstraints(bgGrassland, i, j);
-                    gridPane1.getChildren().add(bgGrassland);
+        for (int i = 0; i < map.getLength(); i++) {
+            for (int j = 0; j < map.getWidth(); j++) {
+                Tile curTile = map.getTile(i, j);
+                switch (curTile.getType()) {
+                    case Mountain:
+                        ImageView bgMountain = new ImageView(MOUNTAIN_TILE);
+                        GridPane.setConstraints(bgMountain, j, i);
+                        gridPane1.getChildren().add(bgMountain);
+                        break;
+                    case Sea:
+                        ImageView bgSea = new ImageView(SEA_TILE);
+                        GridPane.setConstraints(bgSea, j, i);
+                        gridPane1.getChildren().add(bgSea);
+                        break;
+                    case Grassland:
+                        ImageView bgGrassland = new ImageView(GRASSLAND_TILE);
+                        GridPane.setConstraints(bgGrassland, j, i);
+                        gridPane1.getChildren().add(bgGrassland);
+                        break;
+                    case Tundra:
+                        ImageView bgTundra = new ImageView(TUNDRA_TILE);
+                        GridPane.setConstraints(bgTundra, j, i);
+                        gridPane1.getChildren().add(bgTundra);
+                        break;
+                    default:
+                        break;
                 }
-                x--;
             }
-        }
-
-        x = 2;
-        for (int j = 6; j <= 11; j++) {
-            if (x == 8) {
-                break;
-            } else {
-                for (int i = x; i < 16-x; i++) {
-                    ImageView bgGrassland = new ImageView(GRASSLAND_TILE);
-                    GridPane.setConstraints(bgGrassland, i, j);
-                    gridPane1.getChildren().add(bgGrassland);
-                }
-                x++;
-            }
-        }
-
-        x = 7;
-        for (int j = 0; j <= 5; j++) {
-            for (int i = 16-x; i <= 16; i++) {
-                ImageView bgSea = new ImageView(SEA_TILE);
-                GridPane.setConstraints(bgSea, i, j);
-                gridPane1.getChildren().add(bgSea);
-            }
-            x--;
-        }
-
-        x = 2;
-        for (int j = 6; j <= 11; j++) {
-            for (int i = 16-x; i <= 16; i++) {
-                ImageView bgTundra = new ImageView(TUNDRA_TILE);
-                GridPane.setConstraints(bgTundra, i, j);
-                gridPane1.getChildren().add(bgTundra);
-                // gridPane2.getChildren().add(bgTundra);
-            }
-            x++;
-        }
-
-        x = 7;
-        int y = 8;
-        for (int j = 2; j <= 5; j++) {
-            for (int i = x; i <= y; i++) {
-                ImageView bgMountain = new ImageView(MOUNTAIN_TILE);
-                GridPane.setConstraints(bgMountain, i, j);
-                gridPane1.getChildren().add(bgMountain);
-            }
-            x--; y++;
-        }
-
-        x = 4;
-        y = 11;
-        for (int j = 6; j <= 9; j++) {
-            for (int i = x; i <= y; i++) {
-                ImageView bgMountain = new ImageView(MOUNTAIN_TILE);
-                GridPane.setConstraints(bgMountain, i, j);
-                gridPane1.getChildren().add(bgMountain);
-            }
-            x++; y--;
         }
 
         gamePane.getChildren().add(gridPane1);
@@ -484,113 +466,13 @@ public class GameViewManager {
     private void createMap() {
         // gridPane1 = new EngimonGridPane();
         gridPane2 = new EngimonGridPane();
-        for (int j = 0; j <= 11; j++) {
-            for (int i = 0; i <= 17; i++) {
+        for (int j = 0; j <= map.getLength(); j++) {
+            for (int i = 0; i <= map.getWidth(); i++) {
                 ImageView block = new ImageView(generateEmptyImage(64,64));
                 GridPane.setConstraints(block, i, j);
                 gridPane2.getChildren().add(block);
             }
         }
-/*
-        int x = 6;
-        for (int j = 0; j <= 5; j++) {
-            for (int i = 0; i <= x; i++) {
-                ImageView bgSea = new ImageView(SEA_TILE);
-                GridPane.setConstraints(bgSea, i, j);
-                // gridPane1.getChildren().add(bgSea);
-                gridPane2.getChildren().add(bgSea);
-            }
-            x--;
-        }
-
-        x = 1;
-        for (int j = 6; j <= 11; j++) {
-            for (int i = 0; i <= x; i++) {
-                ImageView bgTundra = new ImageView(TUNDRA_TILE);
-                GridPane.setConstraints(bgTundra, i, j);
-                // gridPane1.getChildren().add(bgTundra);
-                gridPane2.getChildren().add(bgTundra);
-            }
-            x++;
-        }
-
-        x = 7;
-        for (int j = 0; j <= 5; j++) {
-            if (x == 1) {
-                break;
-            } else {
-                for (int i = x; i < 16-x; i++) {
-                    ImageView bgGrassland = new ImageView(GRASSLAND_TILE);
-                    GridPane.setConstraints(bgGrassland, i, j);
-                    // gridPane1.getChildren().add(bgGrassland);
-                    gridPane2.getChildren().add(bgGrassland);
-                }
-                x--;
-            }
-        }
-
-        x = 2;
-        for (int j = 6; j <= 11; j++) {
-            if (x == 8) {
-                break;
-            } else {
-                for (int i = x; i < 16-x; i++) {
-                    ImageView bgGrassland = new ImageView(GRASSLAND_TILE);
-                    GridPane.setConstraints(bgGrassland, i, j);
-                    // gridPane1.getChildren().add(bgGrassland);
-                    gridPane2.getChildren().add(bgGrassland);
-                }
-                x++;
-            }
-        }
-
-        x = 7;
-        for (int j = 0; j <= 5; j++) {
-            for (int i = 16-x; i <= 16; i++) {
-                ImageView bgSea = new ImageView(SEA_TILE);
-                GridPane.setConstraints(bgSea, i, j);
-                // gridPane1.getChildren().add(bgSea);
-                gridPane2.getChildren().add(bgSea);
-            }
-            x--;
-        }
-
-        x = 2;
-        for (int j = 6; j <= 11; j++) {
-            for (int i = 16-x; i <= 16; i++) {
-                ImageView bgTundra = new ImageView(TUNDRA_TILE);
-                GridPane.setConstraints(bgTundra, i, j);
-                // gridPane1.getChildren().add(bgTundra);
-                gridPane2.getChildren().add(bgTundra);
-            }
-            x++;
-        }
-
-        x = 7;
-        int y = 8;
-        for (int j = 2; j <= 5; j++) {
-            for (int i = x; i <= y; i++) {
-                ImageView bgMountain = new ImageView(MOUNTAIN_TILE);
-                GridPane.setConstraints(bgMountain, i, j);
-                // gridPane1.getChildren().add(bgMountain);
-                gridPane2.getChildren().add(bgMountain);
-            }
-            x--; y++;
-        }
-
-        x = 4;
-        y = 11;
-        for (int j = 6; j <= 9; j++) {
-            for (int i = x; i <= y; i++) {
-                ImageView bgMountain = new ImageView(MOUNTAIN_TILE);
-                GridPane.setConstraints(bgMountain, i, j);
-                // gridPane1.getChildren().add(bgMountain);
-                gridPane2.getChildren().add(bgMountain);
-            }
-            x++; y--;
-        }
-*/
-        // gamePane.getChildren().add(gridPane1);
         gamePane.getChildren().add(gridPane2);
     }
 }

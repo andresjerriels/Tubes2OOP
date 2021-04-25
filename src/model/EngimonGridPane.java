@@ -12,7 +12,7 @@ public class EngimonGridPane extends GridPane {
     public EngimonGridPane() {
     }
 
-    public Node replaceMapWithEngimon(final int column, final int row, ImageView other) {
+    public Node replaceMapWithImage(final int column, final int row, ImageView other) {
         ObservableList<Node> children = getChildren();
         other.setFitHeight(64);
         other.setFitWidth(64);

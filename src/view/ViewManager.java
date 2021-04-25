@@ -1,5 +1,10 @@
 package view;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import game.Engimon.Engimon;
+import game.Engimon.EngimonFactory;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -7,12 +12,17 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import model.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import model.EngimonButton;
+import model.EngimonStarterPicker;
+import model.InfoLabel;
+import model.MainMenuSubScene;
 
 public class ViewManager {
 
@@ -33,7 +43,7 @@ public class ViewManager {
 
     List<EngimonButton> menuButtons;
     List<EngimonStarterPicker> engimonStartersList;
-    private ENGIMON chosenEngimon;
+    private Engimon chosenEngimon;
 
     public ViewManager() {
         menuButtons = new ArrayList<>();
@@ -76,18 +86,27 @@ public class ViewManager {
         HBox box = new HBox();
         box.setSpacing(20);
         engimonStartersList = new ArrayList<>();
-        for (ENGIMON engimon : ENGIMON.values()) {
-            EngimonStarterPicker engimonToPick = new EngimonStarterPicker(engimon);
-            engimonStartersList.add(engimonToPick);
-            box.getChildren().add(engimonToPick);
-            engimonToPick.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        try {
+            engimonStartersList.add(new EngimonStarterPicker(EngimonFactory.createEngimon("Charmamon", 0)));
+            engimonStartersList.add(new EngimonStarterPicker(EngimonFactory.createEngimon("Pikamon", 1)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Default
+        engimonStartersList.get(0).setIsCircleChosen(true);
+        chosenEngimon = engimonStartersList.get(0).getEngimon();
+
+        for (EngimonStarterPicker engimonPicker : engimonStartersList) {
+            box.getChildren().add(engimonPicker);
+            engimonPicker.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
-                    for (EngimonStarterPicker engimon : engimonStartersList) {
-                        engimon.setIsCircleChosen(false);
+                    for (EngimonStarterPicker engimonPicker : engimonStartersList) {
+                        engimonPicker.setIsCircleChosen(false);
                     }
-                    engimonToPick.setIsCircleChosen(true);
-                    chosenEngimon = engimonToPick.getEngimon();
+                    engimonPicker.setIsCircleChosen(true);
+                    chosenEngimon = engimonPicker.getEngimon();
                 }
             });
         }
@@ -105,7 +124,11 @@ public class ViewManager {
             @Override
             public void handle(ActionEvent event) {
                 GameViewManager gameManager = new GameViewManager();
-                gameManager.createNewGame(mainStage);
+                try {
+                    gameManager.createNewGame(mainStage, chosenEngimon);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 

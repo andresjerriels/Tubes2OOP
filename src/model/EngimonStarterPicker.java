@@ -1,5 +1,6 @@
 package model;
 
+import game.Engimon.Engimon;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -13,12 +14,12 @@ public class EngimonStarterPicker extends VBox {
     private String circleNotChosen = "view/resources/grey_circle.png";
     private String circleChosen = "view/resources/yellow_boxTick.png";
 
-    private ENGIMON engimon;
+    private Engimon engimon;
     private boolean isCircleChosen;
 
-    public EngimonStarterPicker(ENGIMON engimon) {
+    public EngimonStarterPicker(Engimon engimon) {
         circleImage = new ImageView(circleNotChosen);
-        engimonImage = new ImageView(engimon.urlImg);
+        engimonImage = engimon.getSprite();
         this.engimon = engimon;
         isCircleChosen = false;
         this.setAlignment(Pos.CENTER);
@@ -28,7 +29,7 @@ public class EngimonStarterPicker extends VBox {
 
     }
 
-    public ENGIMON getEngimon() {
+    public Engimon getEngimon() {
         return engimon;
     }
 

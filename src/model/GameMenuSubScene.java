@@ -49,4 +49,15 @@ public class GameMenuSubScene extends SubScene {
     public AnchorPane getPane() {
         return (AnchorPane) this.getRoot();
     }
+
+    public void setSize(double width, double height) {
+        this.setWidth(width);
+        this.setHeight(height);
+
+        BackgroundImage image = new BackgroundImage(new Image(BACKGROUND_IMAGE, width, height, false, true),
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, null);
+
+        AnchorPane root2 = (AnchorPane) this.getRoot();
+        root2.setBackground(new Background(image));
+    }
 }
