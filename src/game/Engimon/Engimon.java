@@ -245,21 +245,37 @@ public abstract class Engimon implements InventoryItem, Comparable<Engimon>, Ser
         }
     }
 
-    public void printDetails() {
-        System.out.println("Name: " + name);
-        System.out.println("Species: " + species);
-        System.out.println("Parent Names: " + parentNames.get(0));
-        System.out.println("              " + parentNames.get(1));
-        System.out.println("Parent Species: " + parentSpecies.get(0));
-        System.out.println("                " + parentSpecies.get(1));
-        System.out.println("ELement(s): " + elements.get(0).getName());
-        if(elements.size() == 2) System.out.println(("            " + elements.get(1).getName()));
-        System.out.println("Lives: " + lives);
-        System.out.println("Level: " + level);
-        System.out.println("Exp: " + exp);
-        System.out.println("Cumulative Exp: " + cum_exp);
-        System.out.println("Skills: ");
-        printSkills();
+    public String printDetails() {
+        String res = "";
+        res += "Name:\t\t\t\t\t" + name + "\n";
+        res += "Species:\t\t\t\t" + species + "\n";
+        res += "Parent Names:\t\t" + parentNames.get(0) + "\n";
+        res += "\t\t\t\t\t\t" + parentNames.get(1) + "\n";
+        res += "Parent Species:\t" + parentSpecies.get(0) + "\n";
+        res += "\t\t\t\t\t\t" + parentSpecies.get(1) + "\n";
+        res += "ELement(s):\t\t" + elements.get(0).getName() + "\n";
+        if(elements.size() == 2) res += ("\t\t\t\t\t\t" + elements.get(1).getName()) + "\n";
+        res += "Lives:\t\t\t\t\t" + lives + "\n";
+        res += "Level:\t\t\t\t" + level + "\n";
+        res += "Exp:\t\t\t\t\t" + exp + "\n";
+        res += "Cumulative Exp:\t" + cum_exp + "\n";
+        // res += "Skills: " + "\n";
+        // System.out.println("Name: " + name);
+        // System.out.println("Species: " + species);
+        // System.out.println("Parent Names: " + parentNames.get(0));
+        // System.out.println("              " + parentNames.get(1));
+        // System.out.println("Parent Species: " + parentSpecies.get(0));
+        // System.out.println("                " + parentSpecies.get(1));
+        // System.out.println("ELement(s): " + elements.get(0).getName());
+        // if(elements.size() == 2) System.out.println(("            " + elements.get(1).getName()));
+        // System.out.println("Lives: " + lives);
+        // System.out.println("Level: " + level);
+        // System.out.println("Exp: " + exp);
+        // System.out.println("Cumulative Exp: " + cum_exp);
+        // System.out.println("Skills: ");
+        // printSkills();
+        System.out.println(res);
+        return res;
       }
 
     public double getPowerLevel(Engimon e) {

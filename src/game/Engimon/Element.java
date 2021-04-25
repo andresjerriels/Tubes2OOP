@@ -47,6 +47,31 @@ public enum Element {
         return elmtName;
     }
 
+    public static Element fromName(String name) {
+        Element elmt = NONE;
+        switch (name) {
+            case "Fire":
+                elmt = FIRE;
+                break;
+            case "Water":
+                elmt = WATER;
+                break;
+            case "Electric":
+                elmt = ELECTRIC;
+                break;
+            case "Ground":
+                elmt = GROUND;
+                break;
+            case "Ice":
+                elmt = ICE;
+                break;
+            default:
+                elmt = NONE;
+                break;
+        }
+        return elmt;
+    }
+
     public String getImageUrl() {
         String url = "";
         switch (this.value) {

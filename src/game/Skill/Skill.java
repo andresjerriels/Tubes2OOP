@@ -1,7 +1,5 @@
 package game.Skill;
 
-import javax.naming.InvalidNameException;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 

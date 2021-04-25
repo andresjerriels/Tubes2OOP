@@ -1,9 +1,11 @@
 package game.Skill;
 
+import java.io.Serializable;
+
 import game.Engimon.Engimon;
 import game.Player.InventoryItem;
 
-public class SkillItem implements InventoryItem {
+public class SkillItem implements InventoryItem, Serializable {
     private Skill skill;
     private int amount;
 
@@ -46,8 +48,10 @@ public class SkillItem implements InventoryItem {
         return amount;
     }
     
-    public void printDetails() {
+    public String printDetails() {
+        String res = "";
         skill.printSkillInfo();
+        return res;
     }
 
 }

@@ -9,7 +9,11 @@ import game.Engimon.EngimonFactory;
 import game.Map.Peta;
 import game.Map.Position;
 import game.Map.Tile;
+import game.Player.InvalidIndexInventory;
 import game.Player.Player;
+import game.Save.ResourceManager;
+import game.Save.SaveData;
+import game.Skill.SkillItem;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -21,17 +25,18 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
+import model.EngiDetailSubscene;
 import model.EngimonButton;
 import model.EngimonGameButton;
 import model.EngimonGridPane;
 import model.EngimonInventoryItem;
 import model.GameMenuSubScene;
 import model.InfoLabel;
+import model.SkillInventoryItem;
 
 public class GameViewManager {
 
@@ -41,12 +46,6 @@ public class GameViewManager {
     private HashMap<String, Boolean> currentlyActiveKeys = new HashMap<>();
 
     // PETA VARIABLES
-    private static final int MAP_HEIGHT = 12;
-    private static final int MAP_WIDTH = 16;
-    private ArrayList<ArrayList<Tile>> matriksPeta;
-    private int nWiildEngimon;
-    private static int maxWildEngimon = 15;
-    private int lvlCapslock;
     private Player player;
     private Position playerPos;
     private Peta map;
@@ -72,8 +71,10 @@ public class GameViewManager {
     private GameMenuSubScene skillsSubScene;
     private GameMenuSubScene breedSubScene;
     private GameMenuSubScene learnSkillSubScene;
-    private GameMenuSubScene saveSubScene;
     private GameMenuSubScene infoSubScene;
+    private EngiDetailSubscene engiDetailSubscene;
+
+    private GridPane engiGrid;
 
     private InfoLabel infoLabel;
 
@@ -97,10 +98,9 @@ public class GameViewManager {
     }
 
     private void createSubScenes() throws Exception {
-        createEngimonSubscene();
+        createEngimonsSubscene();
 
-        skillsSubScene = new GameMenuSubScene();
-        gamePane.getChildren().add(skillsSubScene);
+        createSkillsSubscene();
 
         breedSubScene = new GameMenuSubScene();
         gamePane.getChildren().add(breedSubScene);
@@ -108,56 +108,149 @@ public class GameViewManager {
         learnSkillSubScene = new GameMenuSubScene();
         gamePane.getChildren().add(learnSkillSubScene);
 
-        saveSubScene = new GameMenuSubScene();
-        gamePane.getChildren().add(saveSubScene);
+        engiDetailSubscene = new EngiDetailSubscene();
+        gamePane.getChildren().add(engiDetailSubscene);
+        engiDetailSubscene.setVisible(false);
         
         createInfoSubscene();
     }
 
-    private void createEngimonSubscene() throws Exception {
+    private void createSkillsSubscene() {
+        skillsSubScene = new GameMenuSubScene();
+
+        ScrollPane skillsScroll = new ScrollPane();
+        skillsScroll.setPrefHeight(550);
+        skillsScroll.setPrefWidth(550);
+        skillsScroll.setLayoutX(25);
+        skillsScroll.setLayoutY(25);
+        skillsScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+
+        GridPane skillsGrid = new GridPane();
+        
+        for (int i = 0; i < player.getInventorySkill().countItemInInventory(); i++) {
+            SkillInventoryItem e = new SkillInventoryItem(player.getInventorySkill().getContainer().get(i));
+
+            e.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    e.getSkill().printDetails();
+                }
+            });
+
+            skillsGrid.add(e, i % 5, i / 5);
+        }
+
+        skillsScroll.setContent(skillsGrid);
+        // engiGrid.setLayoutX(0);
+        // engiGrid.setLayoutY(0);
+
+        skillsSubScene.getPane().getChildren().add(skillsScroll);
+
+        gamePane.getChildren().add(skillsSubScene);
+    }
+
+    private void createEngimonsSubscene() throws InvalidIndexInventory {
         engimonsSubScene = new GameMenuSubScene();
+
+        refreshEngiInventory();
+
+        gamePane.getChildren().add(engimonsSubScene);
+    }
+
+    private void refreshEngiInventory() throws InvalidIndexInventory {
+        engimonsSubScene.getPane().getChildren().clear();
 
         ScrollPane engiScroll = new ScrollPane();
         engiScroll.setPrefHeight(550);
         engiScroll.setPrefWidth(550);
         engiScroll.setLayoutX(25);
         engiScroll.setLayoutY(25);
-        engiScroll.setStyle("-fx-background-color: transparent");
+        engiScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
-        GridPane engiGrid = new GridPane();
-        // engiGrid.setPrefHeight(550);
-        // engiGrid.setPrefHeight(550);
-        engiGrid.setHgap(0);
-        engiGrid.setVgap(0);
+        engiGrid = new GridPane();
         
-        // for (int i = 0; i < 5; i++) {
-        //     engiGrid.getColumnConstraints().add(new ColumnConstraints(100));
-        // }
-        // for (int i = 0; i < 5; i++) {
-        //     engiGrid.getRowConstraints().add(new RowConstraints(100));
-        // }
-        
-        EngimonInventoryItem e = new EngimonInventoryItem(player.getActiveEngimon());
+        for (int i = 0; i < player.getInventoryEngimon().countItemInInventory(); i++) {
+            EngimonInventoryItem e = new EngimonInventoryItem(player.getEngiRefFromIndex(i), player.getEngiRefFromIndex(i) == player.getActiveEngimon(), i);
 
-        // GridPane.setConstraints(e, 0, 0);
-        // engiGrid.getChildren().add(e);
+            e.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    openEngiDetails(e.getEngimon(), e.getIndex());
+                }
+            });
 
-        engiGrid.add(new EngimonInventoryItem(player.getActiveEngimon()), 0, 0);
-        engiGrid.add(new EngimonInventoryItem(EngimonFactory.createEngimon(0)), 0, 1);
-        engiGrid.add(new EngimonInventoryItem(EngimonFactory.createEngimon(0)), 0, 2);
-        engiGrid.add(new EngimonInventoryItem(EngimonFactory.createEngimon(0)), 0, 3);
-        engiGrid.add(new EngimonInventoryItem(EngimonFactory.createEngimon(0)), 0, 4);
-        engiGrid.add(new EngimonInventoryItem(EngimonFactory.createEngimon(0)), 0, 5);
-        engiGrid.add(new EngimonInventoryItem(EngimonFactory.createEngimon(0)), 0, 6);
-        engiGrid.add(new EngimonInventoryItem(EngimonFactory.createEngimon(0)), 1, 0);
+            engiGrid.add(e, i % 5, i / 5);
+        }
 
         engiScroll.setContent(engiGrid);
-        engiGrid.setLayoutX(0);
-        engiGrid.setLayoutY(0);
+        // engiGrid.setLayoutX(0);
+        // engiGrid.setLayoutY(0);
 
         engimonsSubScene.getPane().getChildren().add(engiScroll);
+    }
 
-        gamePane.getChildren().add(engimonsSubScene);
+    private void openEngiDetails(Engimon e, int idx) {
+        engiDetailSubscene.setEngimon(e);
+
+        try {
+            if (player.getEngiRefFromIndex(idx) == player.getActiveEngimon()) {
+                engiDetailSubscene.setActiveButton.setDisable(true);
+            } else {
+                engiDetailSubscene.setActiveButton.setDisable(false);
+            }
+        } catch (InvalidIndexInventory e1) {
+            e1.printStackTrace();
+        }
+        engiDetailSubscene.setActiveButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                player.setActiveEngimon(idx);
+                engiDetailSubscene.setActiveButton.setDisable(true);
+                refreshMap();
+                try {
+                    refreshEngiInventory();
+                } catch (InvalidIndexInventory e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        engiDetailSubscene.renameButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                player.renameEngimon(idx, engiDetailSubscene.renameField.getText());
+                engiDetailSubscene.renameField.setText("");
+                engiDetailSubscene.setEngimon(engiDetailSubscene.getEngimon());
+                try {
+                    refreshEngiInventory();
+                } catch (InvalidIndexInventory e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        engiDetailSubscene.releaseButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (player.getInventoryEngimon().countItemInInventory() > 1) {
+                    try {
+                        if (player.getEngiRefFromIndex(idx) == player.getActiveEngimon()) {
+                            player.setActiveEngimonNull();
+                            refreshMap();
+                        }
+                        player.removeEngimonByIndex(idx);
+                        refreshEngiInventory();
+                    } catch (InvalidIndexInventory e) {
+                        e.printStackTrace();
+                    }
+                    engiDetailSubscene.setVisible(false);
+                } else {
+                    showInfo("You only have 1 engimon");
+                }
+            }
+        });
+
+        engiDetailSubscene.setVisible(true);
     }
 
     private void createInfoSubscene() {
@@ -237,7 +330,28 @@ public class GameViewManager {
         this.menuStage = menuStage;
         this.menuStage.hide();
         player = new Player(chosenEngimon);
+        map = new Peta("./src/game/files/map.txt", player);
         player.setActiveEngimon(0);
+        player.addToInvSkill(new SkillItem(1, "Storm Hammer"));
+        player.addToInvSkill(new SkillItem(3, "Ice Spike"));
+        player.addToInvSkill(new SkillItem(2, "Mud Storm"));
+        player.addToInvSkill(new SkillItem(1, "Flame Punch"));
+        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+        createBackground();
+        createMap();
+        createPlayer();
+        createGameLoop();
+        createWildEngimons();
+        createGameElements();
+        createSubScenes();
+        gameStage.show();
+    }
+
+    public void loadGame(Stage menuStage, SaveData saveData) throws Exception {
+        this.menuStage = menuStage;
+        this.menuStage.hide();
+        player = saveData.player;
+        map = saveData.map;
         createBackground();
         createMap();
         createPlayer();
@@ -254,10 +368,16 @@ public class GameViewManager {
         menuButton.setLayoutY(25);
         menuButton.setOpacity(0.3);
 
+        createEngimonsButton();
+        createSkillsButton();
+        createBreedButton();
+        createLearnSkillButton();
+        createSaveButton();
+        createExitButton();
         menuButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                createMenuButtons();
+                toggleMenuButtons();
             }
         });
 
@@ -271,37 +391,27 @@ public class GameViewManager {
         gamePane.getChildren().add(button);
     }
 
-    private void createMenuButtons() {
+    private void toggleMenuButtons() {
         ColorAdjust colorAdjust = new ColorAdjust();
         colorAdjust.setBrightness(-0.5);
-        if (menuButtons.isEmpty()) {
+        if (!menuButtons.get(0).isVisible()) {
             gridPane1.setEffect(colorAdjust);
-            createEngimonsButton();
-            createSkillsButton();
-            createBreedButton();
-            createLearnSkillButton();
-            createSaveButton();
-            createExitButton();
         } else {
             gridPane1.setEffect(null);
-            closeMenuButtons();
         }
-    }
 
-    private void closeMenuButtons() {
         for (EngimonGameButton button : menuButtons) {
-            button.setLayoutX(-676);
+            button.setVisible(!button.isVisible());
         }
         if (subSceneToHide != null) {
             subSceneToHide.moveSubScene();
             subSceneToHide = null;
         }
-
-        menuButtons = new ArrayList<>();
     }
 
     private void createEngimonsButton() {
         EngimonGameButton engimonsButton = new EngimonGameButton("ENGIMONS");
+        engimonsButton.setVisible(false);
         addMenuButton(engimonsButton);
 
         engimonsButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -314,6 +424,7 @@ public class GameViewManager {
 
     private void createSkillsButton() {
         EngimonGameButton skillsButton = new EngimonGameButton("SKILLS");
+        skillsButton.setVisible(false);
         addMenuButton(skillsButton);
 
         skillsButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -326,6 +437,7 @@ public class GameViewManager {
 
     private void createBreedButton() {
         EngimonGameButton breedButton = new EngimonGameButton("BREED");
+        breedButton.setVisible(false);
         addMenuButton(breedButton);
 
         breedButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -338,6 +450,7 @@ public class GameViewManager {
 
     private void createLearnSkillButton() {
         EngimonGameButton learnSkillButton = new EngimonGameButton("LEARN A SKILL");
+        learnSkillButton.setVisible(false);
         addMenuButton(learnSkillButton);
 
         learnSkillButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -350,18 +463,29 @@ public class GameViewManager {
 
     private void createSaveButton() {
         EngimonGameButton saveButton = new EngimonGameButton("SAVE");
+        saveButton.setVisible(false);
         addMenuButton(saveButton);
 
         saveButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                showSubScene(saveSubScene);
+                SaveData data = new SaveData();
+                data.map = map;
+                data.player = player;
+                try {
+                    ResourceManager.save(data, "saveData.engi");
+                    System.out.println("Game saved to saveData.engi");
+                    showInfo("Game saved to saveData.engi");
+                } catch (Exception e) {
+                    System.out.println("Tidak dapat melakukan save: "+ e.getMessage());
+                }
             }
         });
     }
 
     private void createExitButton() {
         EngimonGameButton exitButton = new EngimonGameButton("EXIT");
+        exitButton.setVisible(false);
         addMenuButton(exitButton);
 
         exitButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -416,13 +540,17 @@ public class GameViewManager {
                 } catch (Exception e) {
                     refreshMap();
                     e.printStackTrace(System.err);
-                    infoLabel.setText(e.getMessage());
-                    infoSubScene.setVisible(true);
+                    showInfo(e.getMessage());
                 }
             }
         };
 
         gameTimer.start();
+    }
+
+    private void showInfo(String info) {
+        infoLabel.setText(info);
+        infoSubScene.setVisible(true);
     }
 
 
@@ -500,7 +628,6 @@ public class GameViewManager {
     }
 
     private void createBackground() {
-        map = new Peta("./src/game/files/map.txt", player);
         gridPane1 = new EngimonGridPane();
 
         for (int i = 0; i < map.getLength(); i++) {
