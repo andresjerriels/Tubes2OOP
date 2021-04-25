@@ -1,12 +1,19 @@
 package view;
 
+import Engimon.Charmamon;
+import Engimon.Engimon;
+import Map.Position;
+import Player.Player;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -16,13 +23,17 @@ import javafx.stage.Stage;
 import model.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import static Engimon.EngimonFactory.createEngimon;
 
 public class GameViewManager {
 
     private AnchorPane gamePane;
     private Scene gameScene;
     private Stage gameStage;
+    private HashMap<String, Boolean> currentlyActiveKeys = new HashMap<>();
 
     private static final String PLAYER_UP = "view/resources/character/up1.png";
     private static final String PLAYER_DOWN ="view/resources/character/down1.png";
@@ -46,18 +57,20 @@ public class GameViewManager {
     private GameMenuSubScene learnSkillSubScene;
     private GameMenuSubScene saveSubScene;
 
-
     private static final int GAME_WIDTH = 1024;
     private static final int GAME_HEIGHT = 768;
 
     private Stage menuStage;
     private ImageView player;
+    private Position playerPos;
     private EngimonButton menuButton;
 
     private EngimonGridPane gridPane1;
     private EngimonGridPane gridPane2;
 
     private ArrayList<ImageView> wildEngimons;
+    private ArrayList<Node> removedTiles;
+    private Node removedTileforPlayer;
 
     private boolean isLeftKeyPressed;
     private boolean isRightKeyPressed;
@@ -101,14 +114,9 @@ public class GameViewManager {
         gameScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if (event.getCode() == KeyCode.A) {
-                    isLeftKeyPressed = true;
-                } else if (event.getCode() == KeyCode.D) {
-                    isRightKeyPressed = true;
-                } else if (event.getCode() == KeyCode.W) {
-                    isUpKeyPressed = true;
-                } else if (event.getCode() == KeyCode.S) {
-                    isDownKeyPressed = true;
+                String codeString = event.getCode().toString();
+                if (!currentlyActiveKeys.containsKey(codeString)) {
+                    currentlyActiveKeys.put(codeString, true);
                 }
             }
         });
@@ -116,17 +124,20 @@ public class GameViewManager {
         gameScene.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if (event.getCode() == KeyCode.A) {
-                    isLeftKeyPressed = false;
-                } else if (event.getCode() == KeyCode.D) {
-                    isRightKeyPressed = false;
-                } else if (event.getCode() == KeyCode.W) {
-                    isUpKeyPressed = false;
-                } else if (event.getCode() == KeyCode.S) {
-                    isDownKeyPressed = false;
-                }
+                currentlyActiveKeys.remove(event.getCode().toString());
             }
         });
+    }
+
+    private boolean removeActiveKey(String codeString) {
+        Boolean isActive = currentlyActiveKeys.get(codeString);
+
+        if (isActive != null && isActive) {
+            currentlyActiveKeys.put(codeString, false);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void initializeStage(){
@@ -140,10 +151,11 @@ public class GameViewManager {
         this.menuStage = menuStage;
         this.menuStage.hide();
         createBackground();
-        createWildEngimons();
         createGameElements();
+        createMap();
         createPlayer();
         createGameLoop();
+        createWildEngimons();
         createSubScenes();
         gameStage.show();
     }
@@ -269,16 +281,32 @@ public class GameViewManager {
     }
 
     private void createWildEngimons() {
+        removedTiles = new ArrayList<>();
         wildEngimons = new ArrayList<>();
-        ImageView engimon = new ImageView("view/resources/engimons/tortomon.gif");
-        gridPane2.replaceMapWithEngimon(4, 7,engimon);
+
+        Engimon wild = null;
+        try {
+            wild = createEngimon("wild", 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ImageView engimon = new ImageView(wild.getImgUrl());
+        removedTiles.add(gridPane2.replaceMapWithEngimon(4, 8,engimon));
+    }
+
+    private void placeBackTiles() {
+        for (Node node : removedTiles) {
+            gridPane2.replaceMapWithNode(node);
+        }
+
+        // removedTiles.add(gridPane2.replaceMapWithEngimon(4, 0,new ImageView(charmamon.getImgUrl())));
+        removedTiles = new ArrayList<>();
     }
 
     private void createPlayer() {
         player = new ImageView(PLAYER_UP);
-        player.setLayoutX(GAME_WIDTH / 2);
-        player.setLayoutY(GAME_HEIGHT / 2);
-        gamePane.getChildren().add(player);
+        playerPos = new Position(6, 8);
+        removedTileforPlayer = gridPane2.replaceMapWithEngimon(playerPos.getX(),playerPos.getY(), player);
     }
 
     private void createGameLoop() {
@@ -294,38 +322,50 @@ public class GameViewManager {
 
 
     private void movePlayer() {
-        if (isLeftKeyPressed && !isRightKeyPressed) {
+        if (removeActiveKey("A")) {
             player.setImage(new Image(PLAYER_LEFT));
-            if (player.getLayoutX() > 0) {
-                player.setLayoutX(player.getLayoutX() - 10);
-            }
+            playerPos.setXY("a");
+            gridPane2.replaceMapWithNode(removedTileforPlayer);
+            removedTileforPlayer = gridPane2.replaceMapWithEngimon(playerPos.getX(), playerPos.getY(), player);
+//            if (player.getLayoutX() > 0) {
+//                player.setLayoutX(player.getLayoutX() - 10);
+//            }
         }
 
-        if (isRightKeyPressed && !isLeftKeyPressed) {
+        if (removeActiveKey("D")) {
             player.setImage(new Image(PLAYER_RIGHT));
-            if (player.getLayoutX() < 994) {
-                player.setLayoutX(player.getLayoutX() + 10);
-            }
+            playerPos.setXY("d");
+            gridPane2.replaceMapWithNode(removedTileforPlayer);
+            removedTileforPlayer = gridPane2.replaceMapWithEngimon(playerPos.getX(), playerPos.getY(), player);
+//            if (player.getLayoutX() < 994) {
+//                player.setLayoutX(player.getLayoutX() + 10);
+//            }
         }
 
-        if(isUpKeyPressed && !isLeftKeyPressed && !isRightKeyPressed && !isDownKeyPressed) {
+        if(removeActiveKey("W")) {
             player.setImage(new Image(PLAYER_UP));
-            if (player.getLayoutY() > 0) {
-                player.setLayoutY(player.getLayoutY() - 10);
-            }
+            playerPos.setXY("w");
+            gridPane2.replaceMapWithNode(removedTileforPlayer);
+            removedTileforPlayer = gridPane2.replaceMapWithEngimon(playerPos.getX(), playerPos.getY(), player);
+//            if (player.getLayoutY() > 0) {
+//                player.setLayoutY(player.getLayoutY() - 10);
+//            }
         }
 
-        if (isDownKeyPressed && !isLeftKeyPressed && !isRightKeyPressed && !isUpKeyPressed) {
+        if (removeActiveKey("S")) {
             player.setImage(new Image(PLAYER_DOWN));
-            if (player.getLayoutY() < 728) {
-                player.setLayoutY(player.getLayoutY() + 10);
-            }
+            playerPos.setXY("s");
+            gridPane2.replaceMapWithNode(removedTileforPlayer);
+            removedTileforPlayer = gridPane2.replaceMapWithEngimon(playerPos.getX(), playerPos.getY(), player);
+//            if (player.getLayoutY() < 728) {
+//                player.setLayoutY(player.getLayoutY() + 10);
+//            }
         }
     }
 
     private void createBackground() {
         gridPane1 = new EngimonGridPane();
-        gridPane2 = new EngimonGridPane();
+        // gridPane2 = new EngimonGridPane();
 
         int x = 6;
         for (int j = 0; j <= 5; j++) {
@@ -333,7 +373,7 @@ public class GameViewManager {
                 ImageView bgSea = new ImageView(SEA_TILE);
                 GridPane.setConstraints(bgSea, i, j);
                 gridPane1.getChildren().add(bgSea);
-                gridPane2.getChildren().add(bgSea);
+                // gridPane2.getChildren().add(bgSea);
             }
             x--;
         }
@@ -344,7 +384,7 @@ public class GameViewManager {
                 ImageView bgTundra = new ImageView(TUNDRA_TILE);
                 GridPane.setConstraints(bgTundra, i, j);
                 gridPane1.getChildren().add(bgTundra);
-                gridPane2.getChildren().add(bgTundra);
+                // gridPane2.getChildren().add(bgTundra);
             }
             x++;
         }
@@ -358,7 +398,7 @@ public class GameViewManager {
                     ImageView bgGrassland = new ImageView(GRASSLAND_TILE);
                     GridPane.setConstraints(bgGrassland, i, j);
                     gridPane1.getChildren().add(bgGrassland);
-                    gridPane2.getChildren().add(bgGrassland);
+                    // gridPane2.getChildren().add(bgGrassland);
                 }
                 x--;
             }
@@ -373,7 +413,7 @@ public class GameViewManager {
                     ImageView bgGrassland = new ImageView(GRASSLAND_TILE);
                     GridPane.setConstraints(bgGrassland, i, j);
                     gridPane1.getChildren().add(bgGrassland);
-                    gridPane2.getChildren().add(bgGrassland);
+                    // gridPane2.getChildren().add(bgGrassland);
                 }
                 x++;
             }
@@ -385,7 +425,7 @@ public class GameViewManager {
                 ImageView bgSea = new ImageView(SEA_TILE);
                 GridPane.setConstraints(bgSea, i, j);
                 gridPane1.getChildren().add(bgSea);
-                gridPane2.getChildren().add(bgSea);
+                // gridPane2.getChildren().add(bgSea);
             }
             x--;
         }
@@ -396,7 +436,7 @@ public class GameViewManager {
                 ImageView bgTundra = new ImageView(TUNDRA_TILE);
                 GridPane.setConstraints(bgTundra, i, j);
                 gridPane1.getChildren().add(bgTundra);
-                gridPane2.getChildren().add(bgTundra);
+                // gridPane2.getChildren().add(bgTundra);
             }
             x++;
         }
@@ -408,7 +448,7 @@ public class GameViewManager {
                 ImageView bgMountain = new ImageView(MOUNTAIN_TILE);
                 GridPane.setConstraints(bgMountain, i, j);
                 gridPane1.getChildren().add(bgMountain);
-                gridPane2.getChildren().add(bgMountain);
+                // gridPane2.getChildren().add(bgMountain);
             }
             x--; y++;
         }
@@ -420,12 +460,129 @@ public class GameViewManager {
                 ImageView bgMountain = new ImageView(MOUNTAIN_TILE);
                 GridPane.setConstraints(bgMountain, i, j);
                 gridPane1.getChildren().add(bgMountain);
-                gridPane2.getChildren().add(bgMountain);
+                // gridPane2.getChildren().add(bgMountain);
             }
             x++; y--;
         }
 
         gamePane.getChildren().add(gridPane1);
+        // gamePane.getChildren().add(gridPane2);
+    }
+
+    private Image generateEmptyImage(int width, int height) {
+        return new WritableImage(width, height);
+    }
+
+    private void createMap() {
+        // gridPane1 = new EngimonGridPane();
+        gridPane2 = new EngimonGridPane();
+        for (int j = 0; j <= 11; j++) {
+            for (int i = 0; i <= 17; i++) {
+                ImageView block = new ImageView(generateEmptyImage(64,64));
+                GridPane.setConstraints(block, i, j);
+                gridPane2.getChildren().add(block);
+            }
+        }
+/*
+        int x = 6;
+        for (int j = 0; j <= 5; j++) {
+            for (int i = 0; i <= x; i++) {
+                ImageView bgSea = new ImageView(SEA_TILE);
+                GridPane.setConstraints(bgSea, i, j);
+                // gridPane1.getChildren().add(bgSea);
+                gridPane2.getChildren().add(bgSea);
+            }
+            x--;
+        }
+
+        x = 1;
+        for (int j = 6; j <= 11; j++) {
+            for (int i = 0; i <= x; i++) {
+                ImageView bgTundra = new ImageView(TUNDRA_TILE);
+                GridPane.setConstraints(bgTundra, i, j);
+                // gridPane1.getChildren().add(bgTundra);
+                gridPane2.getChildren().add(bgTundra);
+            }
+            x++;
+        }
+
+        x = 7;
+        for (int j = 0; j <= 5; j++) {
+            if (x == 1) {
+                break;
+            } else {
+                for (int i = x; i < 16-x; i++) {
+                    ImageView bgGrassland = new ImageView(GRASSLAND_TILE);
+                    GridPane.setConstraints(bgGrassland, i, j);
+                    // gridPane1.getChildren().add(bgGrassland);
+                    gridPane2.getChildren().add(bgGrassland);
+                }
+                x--;
+            }
+        }
+
+        x = 2;
+        for (int j = 6; j <= 11; j++) {
+            if (x == 8) {
+                break;
+            } else {
+                for (int i = x; i < 16-x; i++) {
+                    ImageView bgGrassland = new ImageView(GRASSLAND_TILE);
+                    GridPane.setConstraints(bgGrassland, i, j);
+                    // gridPane1.getChildren().add(bgGrassland);
+                    gridPane2.getChildren().add(bgGrassland);
+                }
+                x++;
+            }
+        }
+
+        x = 7;
+        for (int j = 0; j <= 5; j++) {
+            for (int i = 16-x; i <= 16; i++) {
+                ImageView bgSea = new ImageView(SEA_TILE);
+                GridPane.setConstraints(bgSea, i, j);
+                // gridPane1.getChildren().add(bgSea);
+                gridPane2.getChildren().add(bgSea);
+            }
+            x--;
+        }
+
+        x = 2;
+        for (int j = 6; j <= 11; j++) {
+            for (int i = 16-x; i <= 16; i++) {
+                ImageView bgTundra = new ImageView(TUNDRA_TILE);
+                GridPane.setConstraints(bgTundra, i, j);
+                // gridPane1.getChildren().add(bgTundra);
+                gridPane2.getChildren().add(bgTundra);
+            }
+            x++;
+        }
+
+        x = 7;
+        int y = 8;
+        for (int j = 2; j <= 5; j++) {
+            for (int i = x; i <= y; i++) {
+                ImageView bgMountain = new ImageView(MOUNTAIN_TILE);
+                GridPane.setConstraints(bgMountain, i, j);
+                // gridPane1.getChildren().add(bgMountain);
+                gridPane2.getChildren().add(bgMountain);
+            }
+            x--; y++;
+        }
+
+        x = 4;
+        y = 11;
+        for (int j = 6; j <= 9; j++) {
+            for (int i = x; i <= y; i++) {
+                ImageView bgMountain = new ImageView(MOUNTAIN_TILE);
+                GridPane.setConstraints(bgMountain, i, j);
+                // gridPane1.getChildren().add(bgMountain);
+                gridPane2.getChildren().add(bgMountain);
+            }
+            x++; y--;
+        }
+*/
+        // gamePane.getChildren().add(gridPane1);
         gamePane.getChildren().add(gridPane2);
     }
 }
