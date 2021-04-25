@@ -104,6 +104,58 @@ public class GameViewManager {
         createKeyListeners();
     }
 
+    public void createNewGame(Stage menuStage, Engimon chosenEngimon) throws Exception {
+        this.menuStage = menuStage;
+        this.menuStage.hide();
+        player = new Player(chosenEngimon);
+        map = new Peta("./src/game/files/map.txt", player);
+        player.setActiveEngimon(0);
+        // player.addToInvSkill(new SkillItem(1, "Storm Hammer"));
+        // player.addToInvSkill(new SkillItem(3, "Ice Spike"));
+        // player.addToInvSkill(new SkillItem(2, "Mud Storm"));
+        // player.addToInvSkill(new SkillItem(2, "Rock Throw"));
+        player.addToInvSkill(new SkillItem(1, "Mud Storm"));
+        // player.addToInvSkill(new SkillItem(2, "Surf Wave"));
+        // player.addToInvSkill(new SkillItem(2, "Hydro Cannon"));
+        // player.addToInvSkill(new SkillItem(1, "Flame Punch"));
+        Engimon e = EngimonFactory.createEngimon("3", "Dittimon");
+        e.setLevel(10);
+        player.addToInvEngimon(e);
+        Engimon e2 = EngimonFactory.createEngimon("4", "Dittimon");
+        e2.setLevel(10);
+        player.addToInvEngimon(e2);
+        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+        createBackground();
+        createMap();
+        createPlayer();
+        createGameLoop();
+        createWildEngimons();
+        createGameElements();
+        createSubScenes();
+        gameStage.setResizable(false);
+        gameStage.show();
+    }
+
+    public void loadGame(Stage menuStage, SaveData saveData) throws Exception {
+        this.menuStage = menuStage;
+        this.menuStage.hide();
+        player = saveData.player;
+        map = saveData.map;
+        createBackground();
+        createMap();
+        createPlayer();
+        createGameLoop();
+        createWildEngimons();
+        createGameElements();
+        createSubScenes();
+        gameStage.setResizable(false);
+        gameStage.show();
+    }
+
     private void createSubScenes() throws Exception {
         createEngimonsSubscene();
 
@@ -120,7 +172,6 @@ public class GameViewManager {
         createInfoSubscene();
     }
 
-    
     private void createLearnSubscene() throws InvalidIndexInventory {
         learnSkillSubScene = new GameMenuSubScene();
 
@@ -211,8 +262,10 @@ public class GameViewManager {
         }
 
         // Default
-        ((SkillInventoryPicker) skillItemHBox.getChildren().get(0)).setIsCircleChosen(true);
-        skillToLearn = ((SkillInventoryPicker) skillItemHBox.getChildren().get(0)).getSkill();
+        if (player.getInventorySkill().countItemInInventory() > 0) {
+            ((SkillInventoryPicker) skillItemHBox.getChildren().get(0)).setIsCircleChosen(true);
+            skillToLearn = ((SkillInventoryPicker) skillItemHBox.getChildren().get(0)).getSkill();
+        }
 
         skillItemScroll.setContent(skillItemHBox);
         // engiGrid.setLayoutX(0);
@@ -233,6 +286,10 @@ public class GameViewManager {
                     }
                     refreshLearnSubScene();
                     refreshSkillsSubScene();
+                    if (player.getInventorySkill().countItemInInventory() == 0) {
+                        learnSkillSubScene.moveSubScene();
+                        subSceneToHide = null;
+                    }
                 } catch (Exception e) {
                     showInfo(e.getMessage());
                     e.printStackTrace();
@@ -578,58 +635,6 @@ public class GameViewManager {
         gameScene = new Scene(gamePane, GAME_WIDTH, GAME_HEIGHT);
         gameStage = new Stage();
         gameStage.setScene(gameScene);
-    }
-
-    public void createNewGame(Stage menuStage, Engimon chosenEngimon) throws Exception {
-        this.menuStage = menuStage;
-        this.menuStage.hide();
-        player = new Player(chosenEngimon);
-        map = new Peta("./src/game/files/map.txt", player);
-        player.setActiveEngimon(0);
-        player.addToInvSkill(new SkillItem(1, "Storm Hammer"));
-        player.addToInvSkill(new SkillItem(3, "Ice Spike"));
-        player.addToInvSkill(new SkillItem(2, "Mud Storm"));
-        player.addToInvSkill(new SkillItem(2, "Rock Throw"));
-        player.addToInvSkill(new SkillItem(2, "Mud Storm"));
-        player.addToInvSkill(new SkillItem(2, "Surf Wave"));
-        player.addToInvSkill(new SkillItem(2, "Hydro Cannon"));
-        player.addToInvSkill(new SkillItem(1, "Flame Punch"));
-        Engimon e = EngimonFactory.createEngimon("3", "Dittimon");
-        e.setLevel(10);
-        player.addToInvEngimon(e);
-        Engimon e2 = EngimonFactory.createEngimon("4", "Dittimon");
-        e2.setLevel(10);
-        player.addToInvEngimon(e2);
-        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-        createBackground();
-        createMap();
-        createPlayer();
-        createGameLoop();
-        createWildEngimons();
-        createGameElements();
-        createSubScenes();
-        gameStage.setResizable(false);
-        gameStage.show();
-    }
-
-    public void loadGame(Stage menuStage, SaveData saveData) throws Exception {
-        this.menuStage = menuStage;
-        this.menuStage.hide();
-        player = saveData.player;
-        map = saveData.map;
-        createBackground();
-        createMap();
-        createPlayer();
-        createGameLoop();
-        createWildEngimons();
-        createGameElements();
-        createSubScenes();
-        gameStage.setResizable(false);
-        gameStage.show();
     }
 
     private void createGameElements() {
