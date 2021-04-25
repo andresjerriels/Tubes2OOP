@@ -28,8 +28,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import model.EngiDetailSubscene;
+import model.EngimonInventoryPicker;
 import model.EngimonButton;
 import model.EngimonGameButton;
 import model.EngimonGridPane;
@@ -37,6 +39,7 @@ import model.EngimonInventoryItem;
 import model.GameMenuSubScene;
 import model.InfoLabel;
 import model.SkillInventoryItem;
+import model.SkillInventoryPicker;
 
 public class GameViewManager {
 
@@ -50,6 +53,12 @@ public class GameViewManager {
     private Position playerPos;
     private Peta map;
 
+    private Engimon parentA;
+    private Engimon parentB;
+
+    private SkillItem skillToLearn;
+    private int skillToLearnIdx;
+    private Engimon engiToLearn;
 
     private static final String PLAYER_UP = "view/resources/character/up1.png";
     private static final String PLAYER_DOWN ="view/resources/character/down1.png";
@@ -74,7 +83,7 @@ public class GameViewManager {
     private GameMenuSubScene infoSubScene;
     private EngiDetailSubscene engiDetailSubscene;
 
-    private GridPane engiGrid;
+    // private GridPane engiGrid;
 
     private InfoLabel infoLabel;
 
@@ -86,8 +95,6 @@ public class GameViewManager {
 
     private EngimonGridPane gridPane1;
     private EngimonGridPane gridPane2;
-
-    private ArrayList<Node> removedTiles;
 
     private AnimationTimer gameTimer;
 
@@ -102,11 +109,9 @@ public class GameViewManager {
 
         createSkillsSubscene();
 
-        breedSubScene = new GameMenuSubScene();
-        gamePane.getChildren().add(breedSubScene);
+        createBreedSubscene();
 
-        learnSkillSubScene = new GameMenuSubScene();
-        gamePane.getChildren().add(learnSkillSubScene);
+        createLearnSubscene();
 
         engiDetailSubscene = new EngiDetailSubscene();
         gamePane.getChildren().add(engiDetailSubscene);
@@ -115,8 +120,259 @@ public class GameViewManager {
         createInfoSubscene();
     }
 
-    private void createSkillsSubscene() {
+    
+    private void createLearnSubscene() throws InvalidIndexInventory {
+        learnSkillSubScene = new GameMenuSubScene();
+
+        refreshLearnSubScene();
+
+        gamePane.getChildren().add(learnSkillSubScene);
+    }
+
+    private void refreshLearnSubScene() throws InvalidIndexInventory {
+        learnSkillSubScene.getPane().getChildren().clear();
+
+        InfoLabel EngimonLearnLabel = new InfoLabel("Engimon");
+        EngimonLearnLabel.setFontSize(20);
+        EngimonLearnLabel.setLayoutX(25);
+        EngimonLearnLabel.setLayoutY(25);
+
+        learnSkillSubScene.getPane().getChildren().add(EngimonLearnLabel);
+
+        ScrollPane EngimonLearnScroll = new ScrollPane();
+        EngimonLearnScroll.setPrefHeight(150);
+        EngimonLearnScroll.setPrefWidth(550);
+        EngimonLearnScroll.setLayoutX(25);
+        EngimonLearnScroll.setLayoutY(85);
+        EngimonLearnScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+
+        HBox EngimonLearnHBox = new HBox();
+        
+        for (int i = 0; i < player.getInventoryEngimon().countItemInInventory(); i++) {
+            EngimonInventoryPicker e = new EngimonInventoryPicker(player.getEngiRefFromIndex(i), i);
+            e.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    for (Node n : EngimonLearnHBox.getChildren()) {
+                        EngimonInventoryPicker engimonPicker = (EngimonInventoryPicker) n;
+                        engimonPicker.setIsCircleChosen(false);
+                    }
+                    e.setIsCircleChosen(true);
+                    engiToLearn = e.getEngimon();
+                }
+            });
+
+            EngimonLearnHBox.getChildren().add(e);
+        }
+
+        // Default
+        ((EngimonInventoryPicker) EngimonLearnHBox.getChildren().get(0)).setIsCircleChosen(true);
+        engiToLearn = ((EngimonInventoryPicker) EngimonLearnHBox.getChildren().get(0)).getEngimon();
+
+        EngimonLearnScroll.setContent(EngimonLearnHBox);
+        // // engiGrid.setLayoutX(0);
+        // // engiGrid.setLayoutY(0);
+
+        learnSkillSubScene.getPane().getChildren().add(EngimonLearnScroll);
+
+        InfoLabel skillItemLabel = new InfoLabel("SKILL");
+        skillItemLabel.setFontSize(20);
+        skillItemLabel.setLayoutX(25);
+        skillItemLabel.setLayoutY(250);
+
+        learnSkillSubScene.getPane().getChildren().add(skillItemLabel);
+
+        ScrollPane skillItemScroll = new ScrollPane();
+        skillItemScroll.setPrefHeight(150);
+        skillItemScroll.setPrefWidth(550);
+        skillItemScroll.setLayoutX(25);
+        skillItemScroll.setLayoutY(310);
+        skillItemScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+
+        HBox skillItemHBox = new HBox();
+        
+        for (int i = 0; i < player.getInventorySkill().countItemInInventory(); i++) {
+
+            SkillInventoryPicker e = new SkillInventoryPicker(player.getSkillRefFromIndex(i), i);
+            e.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    for (Node n : skillItemHBox.getChildren()) {
+                        SkillInventoryPicker engimonPicker = (SkillInventoryPicker) n;
+                        engimonPicker.setIsCircleChosen(false);
+                    }
+                    e.setIsCircleChosen(true);
+                    skillToLearn = e.getSkill();
+                    skillToLearnIdx = e.getIndex();
+                }
+            });
+
+            skillItemHBox.getChildren().add(e);
+        }
+
+        // Default
+        ((SkillInventoryPicker) skillItemHBox.getChildren().get(0)).setIsCircleChosen(true);
+        skillToLearn = ((SkillInventoryPicker) skillItemHBox.getChildren().get(0)).getSkill();
+
+        skillItemScroll.setContent(skillItemHBox);
+        // engiGrid.setLayoutX(0);
+        // engiGrid.setLayoutY(0);
+
+        learnSkillSubScene.getPane().getChildren().add(skillItemScroll);
+
+        EngimonGameButton executeLearnButton = new EngimonGameButton("LEARN");
+        executeLearnButton.setLayoutX(205);
+        executeLearnButton.setLayoutY(500);
+
+        executeLearnButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                try {
+                    if (skillToLearn.learn(engiToLearn) == 0) {
+                        player.removeSkillByIndex(skillToLearnIdx);
+                    }
+                    refreshLearnSubScene();
+                    refreshSkillsSubScene();
+                } catch (Exception e) {
+                    showInfo(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        learnSkillSubScene.getPane().getChildren().add(executeLearnButton);
+    }
+
+    private void createBreedSubscene() throws InvalidIndexInventory {
+        breedSubScene = new GameMenuSubScene();
+
+        refreshBreedSubScene();
+
+        gamePane.getChildren().add(breedSubScene);
+    }
+
+    private void refreshBreedSubScene() throws InvalidIndexInventory {
+        breedSubScene.getPane().getChildren().clear();
+
+        InfoLabel parentALabel = new InfoLabel("Parent A");
+        parentALabel.setFontSize(20);
+        parentALabel.setLayoutX(25);
+        parentALabel.setLayoutY(25);
+
+        breedSubScene.getPane().getChildren().add(parentALabel);
+
+        ScrollPane parentAScroll = new ScrollPane();
+        parentAScroll.setPrefHeight(150);
+        parentAScroll.setPrefWidth(550);
+        parentAScroll.setLayoutX(25);
+        parentAScroll.setLayoutY(85);
+        parentAScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+
+        HBox parentAHBox = new HBox();
+        
+        for (int i = 0; i < player.getInventoryEngimon().countItemInInventory(); i++) {
+
+            EngimonInventoryPicker e = new EngimonInventoryPicker(player.getEngiRefFromIndex(i), i);
+            e.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    for (Node n : parentAHBox.getChildren()) {
+                        EngimonInventoryPicker engimonPicker = (EngimonInventoryPicker) n;
+                        engimonPicker.setIsCircleChosen(false);
+                    }
+                    e.setIsCircleChosen(true);
+                    parentA = e.getEngimon();
+                }
+            });
+
+            parentAHBox.getChildren().add(e);
+        }
+
+        // Default
+        ((EngimonInventoryPicker) parentAHBox.getChildren().get(0)).setIsCircleChosen(true);
+        parentA = ((EngimonInventoryPicker) parentAHBox.getChildren().get(0)).getEngimon();
+
+        parentAScroll.setContent(parentAHBox);
+        // // engiGrid.setLayoutX(0);
+        // // engiGrid.setLayoutY(0);
+
+        breedSubScene.getPane().getChildren().add(parentAScroll);
+
+        InfoLabel parentBLabel = new InfoLabel("Parent B");
+        parentBLabel.setFontSize(20);
+        parentBLabel.setLayoutX(25);
+        parentBLabel.setLayoutY(250);
+
+        breedSubScene.getPane().getChildren().add(parentBLabel);
+
+        ScrollPane parentBScroll = new ScrollPane();
+        parentBScroll.setPrefHeight(150);
+        parentBScroll.setPrefWidth(550);
+        parentBScroll.setLayoutX(25);
+        parentBScroll.setLayoutY(310);
+        parentBScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+
+        HBox parentBHBox = new HBox();
+        
+        for (int i = 0; i < player.getInventoryEngimon().countItemInInventory(); i++) {
+
+            EngimonInventoryPicker e = new EngimonInventoryPicker(player.getEngiRefFromIndex(i), i);
+            e.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    for (Node n : parentBHBox.getChildren()) {
+                        EngimonInventoryPicker engimonPicker = (EngimonInventoryPicker) n;
+                        engimonPicker.setIsCircleChosen(false);
+                    }
+                    e.setIsCircleChosen(true);
+                    parentB = e.getEngimon();
+                }
+            });
+
+            parentBHBox.getChildren().add(e);
+        }
+
+        // Default
+        ((EngimonInventoryPicker) parentBHBox.getChildren().get(0)).setIsCircleChosen(true);
+        parentB = ((EngimonInventoryPicker) parentBHBox.getChildren().get(0)).getEngimon();
+
+        parentBScroll.setContent(parentBHBox);
+        // engiGrid.setLayoutX(0);
+        // engiGrid.setLayoutY(0);
+
+        breedSubScene.getPane().getChildren().add(parentBScroll);
+
+        EngimonGameButton executeBreedButton = new EngimonGameButton("BREED");
+        executeBreedButton.setLayoutX(205);
+        executeBreedButton.setLayoutY(500);
+
+        executeBreedButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                try {
+                    player.addToInvEngimon(parentA.breed(parentB));
+                    refreshBreedSubScene();
+                    refreshEngiInventory();
+                } catch (Exception e) {
+                    showInfo(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        breedSubScene.getPane().getChildren().add(executeBreedButton);
+    }
+
+    private void createSkillsSubscene() throws InvalidIndexInventory {
         skillsSubScene = new GameMenuSubScene();
+
+        refreshSkillsSubScene();
+
+        gamePane.getChildren().add(skillsSubScene);
+    }
+
+    private void refreshSkillsSubScene() throws InvalidIndexInventory {
+        skillsSubScene.getPane().getChildren().clear();
 
         ScrollPane skillsScroll = new ScrollPane();
         skillsScroll.setPrefHeight(550);
@@ -145,8 +401,6 @@ public class GameViewManager {
         // engiGrid.setLayoutY(0);
 
         skillsSubScene.getPane().getChildren().add(skillsScroll);
-
-        gamePane.getChildren().add(skillsSubScene);
     }
 
     private void createEngimonsSubscene() throws InvalidIndexInventory {
@@ -167,7 +421,7 @@ public class GameViewManager {
         engiScroll.setLayoutY(25);
         engiScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
-        engiGrid = new GridPane();
+        GridPane engiGrid = new GridPane();
         
         for (int i = 0; i < player.getInventoryEngimon().countItemInInventory(); i++) {
             EngimonInventoryItem e = new EngimonInventoryItem(player.getEngiRefFromIndex(i), player.getEngiRefFromIndex(i) == player.getActiveEngimon(), i);
@@ -335,7 +589,21 @@ public class GameViewManager {
         player.addToInvSkill(new SkillItem(1, "Storm Hammer"));
         player.addToInvSkill(new SkillItem(3, "Ice Spike"));
         player.addToInvSkill(new SkillItem(2, "Mud Storm"));
+        player.addToInvSkill(new SkillItem(2, "Rock Throw"));
+        player.addToInvSkill(new SkillItem(2, "Mud Storm"));
+        player.addToInvSkill(new SkillItem(2, "Surf Wave"));
+        player.addToInvSkill(new SkillItem(2, "Hydro Cannon"));
         player.addToInvSkill(new SkillItem(1, "Flame Punch"));
+        Engimon e = EngimonFactory.createEngimon("3", "Dittimon");
+        e.setLevel(10);
+        player.addToInvEngimon(e);
+        Engimon e2 = EngimonFactory.createEngimon("4", "Dittimon");
+        e2.setLevel(10);
+        player.addToInvEngimon(e2);
+        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
         player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
         createBackground();
         createMap();
@@ -344,6 +612,7 @@ public class GameViewManager {
         createWildEngimons();
         createGameElements();
         createSubScenes();
+        gameStage.setResizable(false);
         gameStage.show();
     }
 
@@ -359,6 +628,7 @@ public class GameViewManager {
         createWildEngimons();
         createGameElements();
         createSubScenes();
+        gameStage.setResizable(false);
         gameStage.show();
     }
 
@@ -456,7 +726,11 @@ public class GameViewManager {
         learnSkillButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                showSubScene(learnSkillSubScene);
+                if (player.getInventorySkill().countItemInInventory() > 0) {
+                    showSubScene(learnSkillSubScene);
+                } else {
+                    showInfo("You do not have any skill items");
+                }
             }
         });
     }
@@ -513,15 +787,6 @@ public class GameViewManager {
         map.PrintPeta();
     }
 
-    private void placeBackTiles() {
-        for (Node node : removedTiles) {
-            gridPane2.replaceMapWithNode(node);
-        }
-
-        // removedTiles.add(gridPane2.replaceMapWithEngimon(4, 0,new ImageView(charmamon.getImgUrl())));
-        removedTiles = new ArrayList<>();
-    }
-
     private void createPlayer() {
         // player = new Player("Martin", 0);
         playerPos = map.getPlayerPosition();
@@ -552,7 +817,6 @@ public class GameViewManager {
         infoLabel.setText(info);
         infoSubScene.setVisible(true);
     }
-
 
     private void processKeypress() throws Exception {
         if (removeActiveKey("A")) {
@@ -606,7 +870,6 @@ public class GameViewManager {
         }
         
     }
-
 
     private void refreshMap() {
         gridPane2.getChildren().clear();

@@ -52,6 +52,7 @@ public class ViewManager {
         mainPane = new AnchorPane();
         mainScene = new Scene (mainPane, WIDTH, HEIGHT);
         mainStage = new Stage();
+        mainStage.setResizable(false);
         mainStage.setScene(mainScene);
         createSubScenes();
         createButtons();

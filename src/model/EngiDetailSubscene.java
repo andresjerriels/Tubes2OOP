@@ -134,6 +134,8 @@ public class EngiDetailSubscene extends GameMenuSubScene {
                 elmtBox.getChildren().add(logo);
             }
 
+            skillBox.setPrefWidth(308);
+            skillBox.setPrefHeight(100);
             skillBox.getChildren().add(skillname);
             skillBox.getChildren().add(bp);
             skillBox.getChildren().add(mastery);

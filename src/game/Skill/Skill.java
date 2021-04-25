@@ -136,4 +136,8 @@ public class Skill implements Serializable{
             }
         }
     }
+
+    public String toString(){
+        return name + " BP:" + Integer.toString(basepower) + " Mastery:" + Integer.toString(mastery) + "\n";
+    }
 }
