@@ -11,20 +11,24 @@ import javafx.scene.text.Text;
 
 public class SkillInventoryItem extends StackPane {
     private SkillItem skillitem;
+    private int index;
+    public ImageView throwButton;
 
-    public SkillInventoryItem(SkillItem s) {
+    public SkillInventoryItem(SkillItem s, int idx, boolean removable) {
         skillitem = s;
+        index = idx;
         setPrefWidth(110);
         setPrefHeight(110);
 
-        // ImageView skillImg = s.getSprite();
-        // skillImg.setLayoutX(0);
-        // skillImg.setLayoutY(0);
-        // skillImg.setFitWidth(110);
-        // skillImg.setFitHeight(110);
-        // this.getChildren().add(skillImg);
+        ImageView skillImg = s.getSkill().getSprite();
+        skillImg.setLayoutX(0);
+        skillImg.setLayoutY(0);
+        skillImg.setFitWidth(50);
+        skillImg.setFitHeight(50);
+        this.getChildren().add(skillImg);
 
         Text name = new Text(s.getSkill().getName());
+        StackPane.setMargin(name, new Insets(0, 0, 5, 0));
         StackPane.setAlignment(name, Pos.BOTTOM_CENTER);
         this.getChildren().add(name);
 
@@ -47,10 +51,23 @@ public class SkillInventoryItem extends StackPane {
         Text bp = new Text(Integer.toString(s.getSkill().getBasePower()));
         StackPane.setMargin(bp, new Insets(5, 0, 0, 0));
         StackPane.setAlignment(bp, Pos.TOP_CENTER);
-        this.getChildren().add(bp);        
+        this.getChildren().add(bp);      
+        
+        if (removable) {
+            throwButton = new ImageView("/view/resources/delete-circle.png");
+            throwButton.setFitWidth(25);
+            throwButton.setFitHeight(25);
+            StackPane.setAlignment(throwButton, Pos.CENTER_RIGHT);
+            StackPane.setMargin(throwButton, new Insets(45, 0, 0, 0));
+            this.getChildren().add(throwButton);
+        }
     }
 
     public SkillItem getSkill() {
         return skillitem;
+    }
+
+    public int getIndex() {
+        return index;
     }
 }

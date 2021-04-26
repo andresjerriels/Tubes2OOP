@@ -3,6 +3,7 @@ package view;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import game.Engimon.Engimon;
 import game.Engimon.EngimonFactory;
@@ -13,7 +14,6 @@ import game.Player.InvalidIndexInventory;
 import game.Player.Player;
 import game.Save.ResourceManager;
 import game.Save.SaveData;
-import game.Skill.SkillItem;
 import game.Skill.InvalidSkillNameException;
 import game.Skill.SkillItem;
 import javafx.animation.AnimationTimer;
@@ -21,34 +21,32 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
-import javafx.scene.text.Text;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import model.*;
-
-import static game.Engimon.EngimonFactory.createEngimon;
-import model.EngiDetailSubscene;
-import model.EngimonInventoryPicker;
+import model.BattleMenuSubScene;
 import model.EngimonButton;
+import model.EngimonDetailSubscene;
 import model.EngimonGameButton;
 import model.EngimonGridPane;
+import model.EngimonInfo;
 import model.EngimonInventoryItem;
+import model.EngimonInventoryPicker;
 import model.GameMenuSubScene;
 import model.InfoLabel;
 import model.SkillInventoryItem;
 import model.SkillInventoryPicker;
+import model.WildEngimonPicker;
 
 public class GameViewManager {
 
@@ -68,6 +66,8 @@ public class GameViewManager {
     private SkillItem skillToLearn;
     private int skillToLearnIdx;
     private Engimon engiToLearn;
+
+    private boolean inMenu;
 
     private static final String PLAYER_UP = "view/resources/character/up1.png";
     private static final String PLAYER_DOWN ="view/resources/character/down1.png";
@@ -90,7 +90,7 @@ public class GameViewManager {
     private GameMenuSubScene breedSubScene;
     private GameMenuSubScene learnSkillSubScene;
     private GameMenuSubScene infoSubScene;
-    private EngiDetailSubscene engiDetailSubscene;
+    private EngimonDetailSubscene engiDetailSubscene;
 
     // private GridPane engiGrid;
 
@@ -130,27 +130,27 @@ public class GameViewManager {
         this.menuStage.hide();
         player = new Player(chosenEngimon);
         map = new Peta("./src/game/files/map.txt", player);
+        inMenu = false;
         player.setActiveEngimon(0);
-        player.gainActiveEngimonExp(2000);
-        // player.addToInvSkill(new SkillItem(1, "Storm Hammer"));
-        // player.addToInvSkill(new SkillItem(3, "Ice Spike"));
-        // player.addToInvSkill(new SkillItem(2, "Mud Storm"));
-        // player.addToInvSkill(new SkillItem(2, "Rock Throw"));
-//        player.addToInvSkill(new SkillItem(1, "Mud Storm"));
-        // player.addToInvSkill(new SkillItem(2, "Surf Wave"));
-        // player.addToInvSkill(new SkillItem(2, "Hydro Cannon"));
-        // player.addToInvSkill(new SkillItem(1, "Flame Punch"));
-//        Engimon e = EngimonFactory.createEngimon("3", "Dittimon");
-//        e.setLevel(10);
-//        player.addToInvEngimon(e);
-//        Engimon e2 = EngimonFactory.createEngimon("4", "Dittimon");
-//        e2.setLevel(10);
-//        player.addToInvEngimon(e2);
-//        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-//        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-//        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-//        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-//        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+        player.addToInvSkill(new SkillItem(1, "Storm Hammer"));
+        player.addToInvSkill(new SkillItem(3, "Ice Spike"));
+        player.addToInvSkill(new SkillItem(2, "Mud Storm"));
+        player.addToInvSkill(new SkillItem(2, "Rock Throw"));
+        player.addToInvSkill(new SkillItem(1, "Mud Storm"));
+        player.addToInvSkill(new SkillItem(2, "Surf Wave"));
+        player.addToInvSkill(new SkillItem(2, "Hydro Cannon"));
+        player.addToInvSkill(new SkillItem(1, "Flame Punch"));
+        Engimon e = EngimonFactory.createEngimon("3", "Dittimon");
+        e.setLevel(10);
+        player.addToInvEngimon(e);
+        Engimon e2 = EngimonFactory.createEngimon("4", "Dittimon");
+        e2.setLevel(10);
+        player.addToInvEngimon(e2);
+        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Electromon"));
+        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
         createBackground();
         createMap();
         createPlayer();
@@ -167,6 +167,7 @@ public class GameViewManager {
         this.menuStage.hide();
         player = saveData.player;
         map = saveData.map;
+        inMenu = false;
         createBackground();
         createMap();
         createPlayer();
@@ -187,7 +188,7 @@ public class GameViewManager {
 
         createLearnSubscene();
 
-        engiDetailSubscene = new EngiDetailSubscene();
+        engiDetailSubscene = new EngimonDetailSubscene();
         gamePane.getChildren().add(engiDetailSubscene);
         engiDetailSubscene.setVisible(false);
 
@@ -463,12 +464,33 @@ public class GameViewManager {
         GridPane skillsGrid = new GridPane();
 
         for (int i = 0; i < player.getInventorySkill().countItemInInventory(); i++) {
-            SkillInventoryItem e = new SkillInventoryItem(player.getInventorySkill().getContainer().get(i));
+            SkillInventoryItem e = new SkillInventoryItem(player.getInventorySkill().getContainer().get(i), i, true);
 
-            e.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            e.throwButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
-                    e.getSkill().printDetails();
+                    List<Integer> choices = new ArrayList<>();
+                    for (int j = 1; j <= e.getSkill().getItemAmount(); j++) {
+                        choices.add(j);
+                    }
+
+                    ChoiceDialog<Integer> dialog = new ChoiceDialog<>(1, choices);
+                    dialog.setTitle("Throw Skill Item");
+                    dialog.setHeaderText("How many items do you want to throw?");
+
+                    Optional<Integer> result = dialog.showAndWait();
+                    if (result.isPresent()){
+                        System.out.println("Your choice: " + result.get());
+                        try {
+                            player.removeNSkill(e.getIndex(), result.get());
+                            refreshSkillsSubScene();
+                            refreshLearnSubScene();
+                        } catch (Exception e) {
+                            showInfo(e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+
                 }
             });
 
@@ -476,8 +498,6 @@ public class GameViewManager {
         }
 
         skillsScroll.setContent(skillsGrid);
-        // engiGrid.setLayoutX(0);
-        // engiGrid.setLayoutY(0);
 
         skillsSubScene.getPane().getChildren().add(skillsScroll);
     }
@@ -693,8 +713,10 @@ public class GameViewManager {
         colorAdjust.setBrightness(-0.5);
         if (!menuButtons.get(0).isVisible()) {
             gridPane1.setEffect(colorAdjust);
+            inMenu = true;
         } else {
             gridPane1.setEffect(null);
+            inMenu = false;
         }
 
         for (EngimonGameButton button : menuButtons) {
@@ -815,7 +837,6 @@ public class GameViewManager {
     }
 
     private void createPlayer() {
-        // player = new Player("Martin", 0);
         playerPos = map.getPlayerPosition();
         gridPane2.replaceMapWithImage(playerPos.getX(),playerPos.getY(), new ImageView(player.getImgUrl()));
         if (player.getActiveEngimon() != null) {
@@ -828,7 +849,9 @@ public class GameViewManager {
             @Override
             public void handle(long now) {
                 try {
-                    processKeypress();
+                    if (!inMenu) {
+                        processKeypress();
+                    }
                 } catch (Exception e) {
                     refreshMap();
                     e.printStackTrace(System.err);

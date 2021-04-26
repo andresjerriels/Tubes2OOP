@@ -3,6 +3,8 @@ package game.Skill;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import javafx.scene.image.ImageView;
+
 public class Skill implements Serializable{
     private String name;
     private int basepower;
@@ -139,5 +141,13 @@ public class Skill implements Serializable{
 
     public String toString(){
         return name + " BP:" + Integer.toString(basepower) + " Mastery:" + Integer.toString(mastery) + "\n";
+    }
+
+    public ImageView getSprite() {
+        return new ImageView("view/resources/skill/" + name.toLowerCase().replaceAll("\\s", "") + ".png");
+    }
+
+    public ImageView getMasterySprite() {
+        return new ImageView("view/resources/skill/lv" + Integer.toString(mastery) + ".png");
     }
 }
