@@ -1,7 +1,5 @@
 package game.Skill;
 
-import javax.naming.InvalidNameException;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -137,5 +135,9 @@ public class Skill implements Serializable{
                 System.out.println("                " + elements.get(i));
             }
         }
+    }
+
+    public String toString(){
+        return name + " BP:" + Integer.toString(basepower) + " Mastery:" + Integer.toString(mastery) + "\n";
     }
 }

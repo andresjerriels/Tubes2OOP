@@ -5,6 +5,8 @@ import java.util.List;
 
 import game.Engimon.Engimon;
 import game.Engimon.EngimonFactory;
+import game.Save.ResourceManager;
+import game.Save.SaveData;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -50,6 +52,7 @@ public class ViewManager {
         mainPane = new AnchorPane();
         mainScene = new Scene (mainPane, WIDTH, HEIGHT);
         mainStage = new Stage();
+        mainStage.setResizable(false);
         mainStage.setScene(mainScene);
         createSubScenes();
         createButtons();
@@ -182,7 +185,13 @@ public class ViewManager {
         loadButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                showSubScene(loadSubScene);
+                try {
+                    SaveData data = (SaveData) ResourceManager.load("saveData.engi");
+                    GameViewManager gameManager = new GameViewManager();
+                    gameManager.loadGame(mainStage, data);
+                } catch (Exception e) {
+                    System.out.println("Tidak dapat melakukan load: "+e.getMessage());
+                }
             }
         });
     }

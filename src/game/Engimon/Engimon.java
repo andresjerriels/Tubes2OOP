@@ -1,11 +1,14 @@
 package game.Engimon;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import game.Player.InventoryItem;
 import game.Skill.Skill;
 import game.Skill.SkillMasteryComparator;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.ImageView;
 
 /**
@@ -83,12 +86,10 @@ public abstract class Engimon implements InventoryItem, Comparable<Engimon>, Ser
                     }
                 }
 
-                Scanner sc = new Scanner(System.in);
-
-                System.out.println("You hatched a new " + spc + "!");
-                System.out.println("Please enter a name for your new engimon");
-                System.out.print("Name: ");
-                nm = sc.nextLine();
+                TextInputDialog td = new TextInputDialog();
+                td.setHeaderText("You hatched a new " + spc + "!\n" + "Enter name");
+                td.showAndWait();
+                nm = td.getEditor().getText();
                 Engimon child = EngimonFactory.createEngimon(nm, spc);
 
                 child.setParents(this, e);
@@ -203,36 +204,36 @@ public abstract class Engimon implements InventoryItem, Comparable<Engimon>, Ser
         return false;
     }
 
-    public void addSkill(Skill s) throws Exception {
+    public String addSkill(Skill s) throws Exception {
         if (!this.isSkillLearned(s)) {
             if (canLearn(s)) {
                 if (this.skills.size() < 4) {
                     this.skills.add(s);
-                    System.out.println(this.name+" learned "+s.getName());
+                    return (this.name+" learned "+s.getName());
                 } else {
-                    throw new Exception("Engimon's skill full");
+                    int pilihan;
+                    System.out.println("Engimon's skill full,");
+                    System.out.println("choose a skill to be replaced");
+                    printSkills();
+
+                    TextInputDialog td = new TextInputDialog();
+                    td.setHeaderText("Engimon's skill full, " + "choose a skill to be replaced\n" + skills +"\nEnter choice (1/2/3/4)");
+                    td.showAndWait();
+                    pilihan = Integer.parseInt(td.getEditor().getText());
+
+                    if (1 <= pilihan && pilihan <= 4) {
+                        String oldSkillName = skills.get(pilihan - 1).getName();
+                        skills.set(pilihan-1, s);
+                        return (name + " forgot " + oldSkillName + "and learned " + s.getName());
+                    } else {
+                        throw new Exception("Invalid choice");
+                    }
                 }
             } else {
                 throw new Exception("Engimon type is not compatible");
             }
         } else {
             throw new Exception("Engimon already learned skill");
-        }
-    }
-
-    public void forgetAndLearnSkill(Skill s, int choice, Exception e) throws Exception {
-        if (e.getMessage().compareTo("Engimon's skill full") == 0) {
-            if (choice < 4){
-                System.out.println(this.name+" forgot "+this.skills.get(choice).getName());
-                this.skills.remove(choice);
-                try {
-                    this.addSkill(s);
-                } catch (Exception e1) {}
-            } else {
-                throw new Exception("Choice out of bounds");
-            }
-        } else {
-            throw new Exception("Cannot forget skill");
         }
     }
 
@@ -245,21 +246,37 @@ public abstract class Engimon implements InventoryItem, Comparable<Engimon>, Ser
         }
     }
 
-    public void printDetails() {
-        System.out.println("Name: " + name);
-        System.out.println("Species: " + species);
-        System.out.println("Parent Names: " + parentNames.get(0));
-        System.out.println("              " + parentNames.get(1));
-        System.out.println("Parent Species: " + parentSpecies.get(0));
-        System.out.println("                " + parentSpecies.get(1));
-        System.out.println("ELement(s): " + elements.get(0).getName());
-        if(elements.size() == 2) System.out.println(("            " + elements.get(1).getName()));
-        System.out.println("Lives: " + lives);
-        System.out.println("Level: " + level);
-        System.out.println("Exp: " + exp);
-        System.out.println("Cumulative Exp: " + cum_exp);
-        System.out.println("Skills: ");
-        printSkills();
+    public String printDetails() {
+        String res = "";
+        res += "Name:\t\t\t\t\t" + name + "\n";
+        res += "Species:\t\t\t\t" + species + "\n";
+        res += "Parent Names:\t\t" + parentNames.get(0) + "\n";
+        res += "\t\t\t\t\t\t" + parentNames.get(1) + "\n";
+        res += "Parent Species:\t" + parentSpecies.get(0) + "\n";
+        res += "\t\t\t\t\t\t" + parentSpecies.get(1) + "\n";
+        res += "ELement(s):\t\t" + elements.get(0).getName() + "\n";
+        if(elements.size() == 2) res += ("\t\t\t\t\t\t" + elements.get(1).getName()) + "\n";
+        res += "Lives:\t\t\t\t\t" + lives + "\n";
+        res += "Level:\t\t\t\t" + level + "\n";
+        res += "Exp:\t\t\t\t\t" + exp + "\n";
+        res += "Cumulative Exp:\t" + cum_exp + "\n";
+        // res += "Skills: " + "\n";
+        // System.out.println("Name: " + name);
+        // System.out.println("Species: " + species);
+        // System.out.println("Parent Names: " + parentNames.get(0));
+        // System.out.println("              " + parentNames.get(1));
+        // System.out.println("Parent Species: " + parentSpecies.get(0));
+        // System.out.println("                " + parentSpecies.get(1));
+        // System.out.println("ELement(s): " + elements.get(0).getName());
+        // if(elements.size() == 2) System.out.println(("            " + elements.get(1).getName()));
+        // System.out.println("Lives: " + lives);
+        // System.out.println("Level: " + level);
+        // System.out.println("Exp: " + exp);
+        // System.out.println("Cumulative Exp: " + cum_exp);
+        // System.out.println("Skills: ");
+        // printSkills();
+        System.out.println(res);
+        return res;
       }
 
     public double getPowerLevel(Engimon e) {
