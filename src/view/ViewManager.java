@@ -231,8 +231,12 @@ public class ViewManager {
             subSceneToHide.moveSubScene();
         }
 
-        subScene.moveSubScene();
-        subSceneToHide = subScene;
+        if (subSceneToHide != subScene) {
+            subScene.moveSubScene();
+            subSceneToHide = subScene;
+        } else {
+            subSceneToHide = null;
+        }
     }
 
     public Stage getMainStage() {
@@ -281,10 +285,12 @@ public class ViewManager {
 
                     try {
                         File file = fileChooser.showOpenDialog(mainStage);
-                        SaveData data = (SaveData) ResourceManager.load(file.getAbsolutePath());
-                        GameViewManager gameManager = new GameViewManager();
-                        parallelTransition.stop();
-                        gameManager.loadGame(mainStage, data);
+                        if (file != null) {
+                            SaveData data = (SaveData) ResourceManager.load(file.getAbsolutePath());
+                            GameViewManager gameManager = new GameViewManager();
+                            parallelTransition.stop();
+                            gameManager.loadGame(mainStage, data);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -368,19 +374,17 @@ public class ViewManager {
     }
     
     private void initAnimation() {
-        TranslateTransition translateTransition = new TranslateTransition(Duration.millis(150000), backgroundLayer.getChildren().get(0));
+        TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(150), backgroundLayer.getChildren().get(0));
         translateTransition.setFromX(0);
-        translateTransition.setToX(-1 * 1920);
+        translateTransition.setToX(-1920);
         translateTransition.setInterpolator(Interpolator.LINEAR);
         
-        TranslateTransition translateTransition2 = new TranslateTransition(Duration.millis(150000),  backgroundLayer.getChildren().get(1));
+        TranslateTransition translateTransition2 = new TranslateTransition(Duration.seconds(150),  backgroundLayer.getChildren().get(1));
         translateTransition2.setFromX(0);
-        translateTransition2.setToX(-1 * 1920);
+        translateTransition2.setToX(-1920);
         translateTransition2.setInterpolator(Interpolator.LINEAR);
 
-        parallelTransition = new ParallelTransition( translateTransition, translateTransition2 );
+        parallelTransition = new ParallelTransition(translateTransition, translateTransition2);
         parallelTransition.setCycleCount(Animation.INDEFINITE);
-              
-       }
-      
+    }
 }

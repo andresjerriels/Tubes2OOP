@@ -460,7 +460,6 @@ public class GameViewManager {
         // Default
         ((EngimonInventoryPicker) EngimonLearnHBox.getChildren().get(0)).setIsCircleChosen(true);
         engiToLearn = ((EngimonInventoryPicker) EngimonLearnHBox.getChildren().get(0)).getEngimon();
-        System.out.println(engiToLearn);
 
         // Default
         ((EngimonInventoryPicker) parentAHBox.getChildren().get(0)).setIsCircleChosen(true);
@@ -629,8 +628,12 @@ public class GameViewManager {
             subSceneToHide.moveSubScene();
         }
 
-        subScene.moveSubScene();
-        subSceneToHide = subScene;
+        if (subSceneToHide != subScene) {
+            subScene.moveSubScene();
+            subSceneToHide = subScene;
+        } else {
+            subSceneToHide = null;
+        }
     }
 
     private void createKeyListeners() {
@@ -799,9 +802,11 @@ public class GameViewManager {
                 fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("engi file", "*.engi"));
                 try {
                     File file = fileChooser.showSaveDialog(gameStage);
-                    ResourceManager.save(data, file.getAbsolutePath());
-                    System.out.println("Game saved to " + file.getAbsolutePath());
-                    showInfo("Game saved!");
+                    if (file != null) {
+                        ResourceManager.save(data, file.getAbsolutePath());
+                        System.out.println("Game saved to " + file.getAbsolutePath());
+                        showInfo("Game saved!");
+                    }
                 } catch (Exception e) {
                     System.out.println("Tidak dapat melakukan save: "+ e.getMessage());
                 }
