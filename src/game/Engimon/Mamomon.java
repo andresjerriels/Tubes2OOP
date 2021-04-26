@@ -23,6 +23,6 @@ public class Mamomon extends Engimon {
 
     @Override
     public ImageView getSprite() {
-        return new ImageView("view/resources/engimons/mamomon.gif");
+        return applyAura(new ImageView("view/resources/engimons/mamomon.gif"));
     }
 }

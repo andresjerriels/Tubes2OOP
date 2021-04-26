@@ -269,6 +269,7 @@ public class Peta implements Serializable {
                         tile.getWildEngimon().addCum_exp(100);
                         if (tile.getWildEngimon().getCumExp() > 4000) {
                             tile.nullifyWildEngimon();
+                            nWiildEngimon--;
                         }
                     }
                 }

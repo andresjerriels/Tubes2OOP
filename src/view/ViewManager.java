@@ -66,6 +66,10 @@ public class ViewManager {
             @Override
             public void handle(WindowEvent event) {
                 parallelTransition.play();
+                if (subSceneToHide != null) {
+                    subSceneToHide.moveSubScene();
+                    subSceneToHide = null;
+                }
             }
         });
 

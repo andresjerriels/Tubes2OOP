@@ -23,6 +23,6 @@ public class Dittimon extends Engimon {
 
     @Override
     public ImageView getSprite() {
-        return new ImageView("view/resources/engimons/dittimon.gif");
+        return applyAura(new ImageView("view/resources/engimons/dittimon.gif"));
     }
 }

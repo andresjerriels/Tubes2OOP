@@ -1,5 +1,8 @@
 package game.Engimon;
 
+import javafx.scene.effect.DropShadow;
+import javafx.scene.paint.Color;
+
 public enum Element { 
     NONE(-1), FIRE(0), WATER(1), ELECTRIC(2), GROUND(3), ICE(4);
 
@@ -45,6 +48,33 @@ public enum Element {
                 break;
         }
         return elmtName;
+    }
+
+    public DropShadow getAura() {
+        DropShadow aura = new DropShadow();
+        aura.setWidth(30);
+        aura.setHeight(30);
+        aura.setSpread(0.3);
+        switch (this.value) {
+            case 0:
+                aura.setColor(Color.RED);
+                break;
+            case 1:
+                aura.setColor(Color.BLUE);
+                break;
+            case 2:
+                aura.setColor(Color.YELLOW);
+                break;
+            case 3:
+                aura.setColor(Color.SADDLEBROWN);
+                break;
+            case 4:
+                aura.setColor(Color.AQUAMARINE);
+                break;
+            default:
+                break;
+        }
+        return aura;
     }
 
     public static Element fromName(String name) {

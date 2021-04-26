@@ -23,6 +23,6 @@ public class Molemon extends Engimon {
 
     @Override
     public ImageView getSprite() {
-        return new ImageView("view/resources/engimons/molemon.gif");
+        return applyAura(new ImageView("view/resources/engimons/molemon.gif"));
     }
 }

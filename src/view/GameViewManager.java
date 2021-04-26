@@ -1051,10 +1051,11 @@ public class GameViewManager {
             }
             throw new Exception("There's no engimon around you");
         }
-
-        if (aroundTiles.size() > 1) {
+        else if (aroundTiles.size() > 1) {
+            inMenu = true;
             createWildEngimonChooserSubScene();
         } else {
+            inMenu = true;
             tileWithEngimon = aroundTiles.get(0);
             chosenWildEngimon = aroundTiles.get(0).getWildEngimon();
             createBattleSubScene();
@@ -1113,8 +1114,7 @@ public class GameViewManager {
                     gameStage.close();
                     menuStage.show();
                 }
-            }
-
+            }        
         } else {
             // lose
 
@@ -1127,11 +1127,9 @@ public class GameViewManager {
 
                 player.removeEngimonByIndex(player.getActiveEngiIndex());
                 player.setActiveEngimonNull();
-
                 if (player.getInventoryEngimon().countItemInInventory() == 0) {
                     showMessageSubscene("You don't have any Engimons left");
                     battleStage.showAndWait();
-//
                     showMessageSubscene("GAME OVER! Thank you for playing with us!");
                     battleStage.showAndWait();
                     gameStage.close();
@@ -1143,6 +1141,16 @@ public class GameViewManager {
             }
 
         }
+        try {
+            refreshEngiInventory();
+            refreshBreedSubScene();
+            refreshSkillsSubScene();
+            refreshLearnSubScene();
+            refreshMap();
+        } catch (InvalidIndexInventory e) {
+            e.printStackTrace();
+        }
+        inMenu = false;
         battleSubScene.moveSubScene();
     }
 
@@ -1276,6 +1284,7 @@ public class GameViewManager {
             @Override
             public void handle(ActionEvent event) {
                 battleSubScene.moveSubScene();
+                inMenu = false;
             }
         });
         return battleButton;
