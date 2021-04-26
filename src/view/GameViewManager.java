@@ -67,6 +67,8 @@ public class GameViewManager {
     private int skillToLearnIdx;
     private Engimon engiToLearn;
 
+    private boolean inMenu;
+
     private static final String PLAYER_UP = "view/resources/character/up1.png";
     private static final String PLAYER_DOWN ="view/resources/character/down1.png";
     private static final String PLAYER_RIGHT = "view/resources/character/right1.png";
@@ -127,6 +129,7 @@ public class GameViewManager {
         this.menuStage.hide();
         player = new Player(chosenEngimon);
         map = new Peta("./src/game/files/map.txt", player);
+        inMenu = false;
         player.setActiveEngimon(0);
         player.addToInvSkill(new SkillItem(1, "Storm Hammer"));
         player.addToInvSkill(new SkillItem(3, "Ice Spike"));
@@ -163,6 +166,7 @@ public class GameViewManager {
         this.menuStage.hide();
         player = saveData.player;
         map = saveData.map;
+        inMenu = false;
         createBackground();
         createMap();
         createPlayer();
@@ -708,8 +712,10 @@ public class GameViewManager {
         colorAdjust.setBrightness(-0.5);
         if (!menuButtons.get(0).isVisible()) {
             gridPane1.setEffect(colorAdjust);
+            inMenu = true;
         } else {
             gridPane1.setEffect(null);
+            inMenu = false;
         }
 
         for (EngimonGameButton button : menuButtons) {
@@ -830,7 +836,6 @@ public class GameViewManager {
     }
 
     private void createPlayer() {
-        // player = new Player("Martin", 0);
         playerPos = map.getPlayerPosition();
         gridPane2.replaceMapWithImage(playerPos.getX(),playerPos.getY(), new ImageView(player.getImgUrl()));
         if (player.getActiveEngimon() != null) {
@@ -843,7 +848,9 @@ public class GameViewManager {
             @Override
             public void handle(long now) {
                 try {
-                    processKeypress();
+                    if (!inMenu) {
+                        processKeypress();
+                    }
                 } catch (Exception e) {
                     refreshMap();
                     e.printStackTrace(System.err);
