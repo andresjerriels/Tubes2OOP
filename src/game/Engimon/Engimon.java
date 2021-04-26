@@ -9,6 +9,7 @@ import game.Player.InventoryItem;
 import game.Skill.Skill;
 import game.Skill.SkillMasteryComparator;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 
 /**
@@ -422,5 +423,15 @@ public abstract class Engimon implements InventoryItem, Comparable<Engimon>, Ser
                 }
             }
         }
+    }
+
+    protected ImageView applyAura(ImageView sprite) {
+        DropShadow aura1 = elements.get(0).getAura();
+        if (elements.size() == 2) {
+            DropShadow aura2 = elements.get(1).getAura();
+            aura1.setInput(aura2);
+        }
+        sprite.setEffect(aura1);
+        return sprite;
     }
 }

@@ -22,6 +22,6 @@ public class Charmamon extends Engimon {
 
     @Override
     public ImageView getSprite() {
-        return new ImageView("view/resources/engimons/charmamon.gif");
+        return applyAura(new ImageView("view/resources/engimons/charmamon.gif"));
     }
 }

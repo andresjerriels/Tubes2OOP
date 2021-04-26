@@ -23,6 +23,6 @@ public class Pikamon extends Engimon {
 
     @Override
     public ImageView getSprite() {
-        return new ImageView("view/resources/engimons/pikamon.gif");
+        return applyAura(new ImageView("view/resources/engimons/pikamon.gif"));
     }
 }

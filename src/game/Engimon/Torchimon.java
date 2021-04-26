@@ -23,6 +23,6 @@ public class Torchimon extends Engimon {
 
     @Override
     public ImageView getSprite() {
-        return new ImageView("view/resources/engimons/torchimon.gif");
+        return applyAura(new ImageView("view/resources/engimons/torchimon.gif"));
     }
 }

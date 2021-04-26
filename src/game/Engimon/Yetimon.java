@@ -23,6 +23,6 @@ public class Yetimon extends Engimon {
 
     @Override
     public ImageView getSprite() {
-        return new ImageView("view/resources/engimons/yetimon.gif");
+        return applyAura(new ImageView("view/resources/engimons/yetimon.gif"));
     }
 }

@@ -23,6 +23,6 @@ public class Tentamon extends Engimon {
 
     @Override
     public ImageView getSprite() {
-        return new ImageView("view/resources/engimons/tentamon.gif");
+        return applyAura(new ImageView("view/resources/engimons/tentamon.gif"));
     }
 }
