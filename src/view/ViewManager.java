@@ -7,20 +7,22 @@ import game.Engimon.Engimon;
 import game.Engimon.EngimonFactory;
 import game.Save.ResourceManager;
 import game.Save.SaveData;
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.ParallelTransition;
+import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 import model.EngimonButton;
 import model.EngimonPicker;
 import model.InfoLabel;
@@ -31,10 +33,15 @@ public class ViewManager {
     private static final int WIDTH = 1024;
     private static final int HEIGHT = 768;
     private AnchorPane mainPane;
+    private ImageView backgroundImageView;
+    private ImageView backgroundImageView2;
+    private Pane backgroundLayer;
     private Scene mainScene;
     private Stage mainStage;
     private static final int MENU_BUTTONS_START_X = 100;
     private static final int MENU_BUTTONS_START_Y = 250;
+
+    private ParallelTransition parallelTransition;
 
     private MainMenuSubScene subSceneToHide;
 
@@ -54,10 +61,27 @@ public class ViewManager {
         mainStage = new Stage();
         mainStage.setResizable(false);
         mainStage.setScene(mainScene);
+
+        mainStage.setOnShowing(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                parallelTransition.play();
+            }
+        });
+
+        mainStage.setOnHiding(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                parallelTransition.stop();
+            }
+        });
+
+        createBackground();
         createSubScenes();
         createButtons();
-        createBackground();
         createLogo();
+        initAnimation();
+        parallelTransition.play();
     }
 
     private void createSubScenes() {
@@ -128,6 +152,7 @@ public class ViewManager {
             public void handle(ActionEvent event) {
                 GameViewManager gameManager = new GameViewManager();
                 try {
+                    parallelTransition.pause();
                     gameManager.createNewGame(mainStage, chosenEngimon);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -188,6 +213,7 @@ public class ViewManager {
                 try {
                     SaveData data = (SaveData) ResourceManager.load("saveData.engi");
                     GameViewManager gameManager = new GameViewManager();
+                    parallelTransition.stop();
                     gameManager.loadGame(mainStage, data);
                 } catch (Exception e) {
                     System.out.println("Tidak dapat melakukan load: "+e.getMessage());
@@ -233,9 +259,17 @@ public class ViewManager {
     }
 
     private void createBackground() {
-        Image backgroundImage = new Image("view/resources/bg.jpg", 1024, 768, false, true);
-        BackgroundImage bg = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, null);
-        mainPane.setBackground(new Background(bg));
+        backgroundImageView = new ImageView("view/resources/bg.jpg");
+        backgroundImageView.setFitHeight(768);
+        backgroundLayer = new Pane();
+        backgroundLayer.getChildren().add(backgroundImageView);
+
+        backgroundImageView2 = new ImageView("view/resources/bg.jpg");
+        backgroundImageView2.setFitHeight(768);
+        backgroundImageView2.setX(1920);
+        backgroundLayer.getChildren().add(backgroundImageView2);
+        
+        mainPane.getChildren().add(backgroundLayer);
     }
 
     private void createLogo() {
@@ -259,4 +293,21 @@ public class ViewManager {
 
         mainPane.getChildren().add(logo);
     }
+    
+    private void initAnimation() {
+        TranslateTransition translateTransition = new TranslateTransition(Duration.millis(150000), backgroundLayer.getChildren().get(0));
+        translateTransition.setFromX(0);
+        translateTransition.setToX(-1 * 1920);
+        translateTransition.setInterpolator(Interpolator.LINEAR);
+        
+        TranslateTransition translateTransition2 = new TranslateTransition(Duration.millis(150000),  backgroundLayer.getChildren().get(1));
+        translateTransition2.setFromX(0);
+        translateTransition2.setToX(-1 * 1920);
+        translateTransition2.setInterpolator(Interpolator.LINEAR);
+
+        parallelTransition = new ParallelTransition( translateTransition, translateTransition2 );
+        parallelTransition.setCycleCount(Animation.INDEFINITE);
+              
+       }
+      
 }
