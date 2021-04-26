@@ -13,19 +13,13 @@ public class SkillInventoryItem extends StackPane {
     private SkillItem skillitem;
     private int index;
     public ImageView throwButton;
+    public ImageView skillPict;
 
     public SkillInventoryItem(SkillItem s, int idx, boolean removable) {
         skillitem = s;
         index = idx;
         setPrefWidth(110);
         setPrefHeight(110);
-
-        ImageView skillImg = s.getSkill().getSprite();
-        skillImg.setLayoutX(0);
-        skillImg.setLayoutY(0);
-        skillImg.setFitWidth(50);
-        skillImg.setFitHeight(50);
-        this.getChildren().add(skillImg);
 
         Text name = new Text(s.getSkill().getName());
         StackPane.setMargin(name, new Insets(0, 0, 5, 0));
@@ -61,6 +55,13 @@ public class SkillInventoryItem extends StackPane {
             StackPane.setMargin(throwButton, new Insets(45, 0, 0, 0));
             this.getChildren().add(throwButton);
         }
+
+        skillPict = new ImageView(s.getSkill().getSprite().getImage());
+        skillPict.setFitWidth(50);
+        skillPict.setFitHeight(50);
+        StackPane.setAlignment(skillPict, Pos.CENTER);
+        StackPane.setMargin(skillPict, new Insets(0, 0, 0, 0));
+        this.getChildren().add(skillPict);
     }
 
     public SkillItem getSkill() {

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import game.Engimon.Engimon;
+import game.Engimon.EngimonFactory;
 import game.Map.Peta;
 import game.Map.Position;
 import game.Map.Tile;
@@ -39,19 +40,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import model.BattleMenuSubScene;
-import model.EngimonButton;
-import model.EngimonDetailSubscene;
-import model.EngimonGameButton;
-import model.EngimonGridPane;
-import model.EngimonInfo;
-import model.EngimonInventoryItem;
-import model.EngimonInventoryPicker;
-import model.GameMenuSubScene;
-import model.InfoLabel;
-import model.SkillInventoryItem;
-import model.SkillInventoryPicker;
-import model.WildEngimonPicker;
+import model.*;
 
 public class GameViewManager {
 
@@ -96,6 +85,8 @@ public class GameViewManager {
     private GameMenuSubScene learnSkillSubScene;
     private GameMenuSubScene infoSubScene;
     private EngimonDetailSubscene engiDetailSubscene;
+    private SkillDetailSubScene skillDetailSubScene;
+
 
     // Engimon inventory variables
     private GridPane engiGrid;
@@ -145,25 +136,25 @@ public class GameViewManager {
         map = new Peta("./src/game/files/map.txt", player);
         inMenu = false;
         player.setActiveEngimon(0);
-        // player.addToInvSkill(new SkillItem(1, "Storm Hammer"));
-        // player.addToInvSkill(new SkillItem(3, "Ice Spike"));
-        // player.addToInvSkill(new SkillItem(2, "Mud Storm"));
-        // player.addToInvSkill(new SkillItem(2, "Rock Throw"));
-        // player.addToInvSkill(new SkillItem(1, "Mud Storm"));
-        // player.addToInvSkill(new SkillItem(2, "Surf Wave"));
-        // player.addToInvSkill(new SkillItem(2, "Hydro Cannon"));
-        // player.addToInvSkill(new SkillItem(1, "Flame Punch"));
-        // Engimon e = EngimonFactory.createEngimon("3", "Dittimon");
-        // e.setLevel(10);
-        // player.addToInvEngimon(e);
-        // Engimon e2 = EngimonFactory.createEngimon("4", "Dittimon");
-        // e2.setLevel(10);
-        // player.addToInvEngimon(e2);
-        // player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-        // player.addToInvEngimon(EngimonFactory.createEngimon("3", "Electromon"));
-        // player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-        // player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-        // player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+//         player.addToInvSkill(new SkillItem(1, "Storm Hammer"));
+//         player.addToInvSkill(new SkillItem(3, "Ice Spike"));
+//         player.addToInvSkill(new SkillItem(2, "Mud Storm"));
+//         player.addToInvSkill(new SkillItem(2, "Rock Throw"));
+//         player.addToInvSkill(new SkillItem(1, "Mud Storm"));
+//         player.addToInvSkill(new SkillItem(2, "Surf Wave"));
+//         player.addToInvSkill(new SkillItem(2, "Hydro Cannon"));
+//         player.addToInvSkill(new SkillItem(1, "Flame Punch"));
+//         Engimon e = EngimonFactory.createEngimon("3", "Dittimon");
+//         e.setLevel(10);
+//         player.addToInvEngimon(e);
+//         Engimon e2 = EngimonFactory.createEngimon("4", "Dittimon");
+//         e2.setLevel(10);
+//         player.addToInvEngimon(e2);
+//         player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+//         player.addToInvEngimon(EngimonFactory.createEngimon("3", "Electromon"));
+//         player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+//         player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+//         player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
         createBackground();
         createMap();
         createPlayer();
@@ -203,6 +194,10 @@ public class GameViewManager {
         
         refreshEngiInventory();
         refreshSkillInventory();
+
+        skillDetailSubScene = new SkillDetailSubScene();
+        gamePane.getChildren().add(skillDetailSubScene);
+        skillDetailSubScene.setVisible(false);
 
         engiDetailSubscene = new EngimonDetailSubscene();
         gamePane.getChildren().add(engiDetailSubscene);
@@ -505,6 +500,13 @@ public class GameViewManager {
                 }
             });
 
+            e.skillPict.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    openSkillDetails(e);
+                }
+            });
+
             skillsGrid.add(e, i % 5, i / 5);
 
             // Learn
@@ -530,6 +532,10 @@ public class GameViewManager {
             ((SkillInventoryPicker) skillItemHBox.getChildren().get(0)).setIsCircleChosen(true);
             skillToLearn = ((SkillInventoryPicker) skillItemHBox.getChildren().get(0)).getSkill();
         }
+    }
+    private void openSkillDetails(SkillInventoryItem e) {
+        skillDetailSubScene.setSkill(e);
+        skillDetailSubScene.setVisible(true);
     }
 
     private void openEngiDetails(Engimon e, int idx) {
