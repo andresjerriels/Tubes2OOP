@@ -310,6 +310,7 @@ public class GameViewManager {
                     }
                     refreshLearnSubScene();
                     refreshSkillsSubScene();
+                    refreshMap();
                     if (player.getInventorySkill().countItemInInventory() == 0) {
                         learnSkillSubScene.moveSubScene();
                         subSceneToHide = null;
@@ -829,6 +830,14 @@ public class GameViewManager {
                 if (curTile.containWildEngimon()) {
                     Engimon eng = curTile.getWildEngimon();
                     ImageView engimon = eng.getSprite();
+                    try {
+                        if (eng.getPowerLevel(player.getActiveEngimon()) > player.getActiveEngimon().getPowerLevel(eng)) {
+                            engimon.setScaleX(1.25);
+                            engimon.setScaleY(1.25);
+                        }
+                    } catch (Exception e) {
+                    }
+                    
                     gridPane2.replaceMapWithImage(j, i, engimon);
                 }
             }
@@ -915,7 +924,6 @@ public class GameViewManager {
     }
     private void refreshMap() {
         gridPane2.getChildren().clear();
-
         
         for (int j = 0; j <= map.getLength(); j++) {
             for (int i = 0; i <= map.getWidth(); i++) {
