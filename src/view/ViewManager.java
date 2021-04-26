@@ -1,5 +1,7 @@
 package view;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +22,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
@@ -40,6 +44,8 @@ public class ViewManager {
     private Stage mainStage;
     private static final int MENU_BUTTONS_START_X = 100;
     private static final int MENU_BUTTONS_START_Y = 250;
+    private final String FONT_PATH = "src/model/resources/kenvector_future.ttf";
+    private final String FONT_THIN_PATH = "src/model/resources/kenvector_future_thin.ttf";
 
     private ParallelTransition parallelTransition;
 
@@ -92,13 +98,64 @@ public class ViewManager {
         loadSubScene = new MainMenuSubScene();
         mainPane.getChildren().add(loadSubScene);
 
-        creditsSubScene = new MainMenuSubScene();
-        mainPane.getChildren().add(creditsSubScene);
-
-        helpSubScene = new MainMenuSubScene();
-        mainPane.getChildren().add(helpSubScene);
-
+        createCreditSubScene();
+        createHelpSubScene();
         createEngimonStarterChooserSubScene();
+    }
+
+    private void createCreditSubScene() {
+        creditsSubScene = new MainMenuSubScene();
+
+        InfoLabel creditLabel = new InfoLabel("CREDITS");
+        creditLabel.setLayoutX(25);
+        creditLabel.setLayoutY(25);
+        String text = "This game is proudly presented to you by:\n\n" +
+                "13519167 - Reyhan Emyr Arrosyid\n" +
+                "13519175 - Stefanus Jeremy Aslan\n" +
+                "13519192 - Gayuh Tri Rahutami\n" +
+                "13519200 - Muhammad Dehan Al Kautsar\n" +
+                "13519205 - Muhammad Rifat Abiwardani\n" +
+                "13519218 - Andres Jerriel Sinabutar\n";
+        Text creditsContent = new Text(text);
+        creditsContent.setLineSpacing(10);
+        creditsContent.setLayoutX(50);
+        creditsContent.setLayoutY(125);
+
+        try {
+            creditsContent.setFont(Font.loadFont(new FileInputStream(FONT_THIN_PATH), 18));
+        } catch (FileNotFoundException e) {
+            creditsContent.setFont(Font.font("Verdana", 18));
+        }
+
+        creditsSubScene.getPane().getChildren().add(creditsContent);
+        creditsSubScene.getPane().getChildren().add(creditLabel);
+        mainPane.getChildren().add(creditsSubScene);
+    }
+
+    private void createHelpSubScene() {
+        helpSubScene = new MainMenuSubScene();
+
+        InfoLabel helpLabel = new InfoLabel("GAME COMMANDS");
+        helpLabel.setLayoutX(25);
+        helpLabel.setLayoutY(25);
+        String text = "w/a/s/d\t: Move\n" +
+                "i\t\t\t: Interact with active engimon\n" +
+                "b\t\t\t: Battle with a nearby wild\n" +
+                "\t\t\t  engimon";
+        Text helpContent = new Text(text);
+        helpContent.setLineSpacing(10);
+        helpContent.setLayoutX(50);
+        helpContent.setLayoutY(150);
+
+        try {
+            helpContent.setFont(Font.loadFont(new FileInputStream(FONT_THIN_PATH), 20));
+        } catch (FileNotFoundException e) {
+            helpContent.setFont(Font.font("Verdana", 20));
+        }
+
+        helpSubScene.getPane().getChildren().add(helpLabel);
+        helpSubScene.getPane().getChildren().add(helpContent);
+        mainPane.getChildren().add(helpSubScene);
     }
 
     private void createEngimonStarterChooserSubScene() {
