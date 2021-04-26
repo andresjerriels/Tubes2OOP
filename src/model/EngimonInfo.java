@@ -4,6 +4,7 @@ import game.Engimon.Element;
 import game.Engimon.Engimon;
 import game.Skill.Skill;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -35,6 +36,11 @@ public class EngimonInfo extends VBox {
         engimonInfo.add(new Text("Lives: " + engimon.getLives()));
         engimonInfo.add(new Text("Skills"));
         engimonInfo.add(new Text("Power Level: " + engimon.getPowerLevel(playerEngimon)));
+
+        if (engimon.getPowerLevel(playerEngimon) > playerEngimon.getPowerLevel(engimon)) {
+            engimonImage.setScaleX(1.5);
+            engimonImage.setScaleY(1.5);
+        }
 
         for (int i = 0; i < engimonInfo.size(); i++) {
             try {
