@@ -1125,7 +1125,6 @@ public class GameViewManager {
             }        
         } else {
             // lose
-
             showMessageSubscene(chosenWildEngimon.getName() + " won! Your engimon was defeated!");
             battleStage.showAndWait();
 
@@ -1252,7 +1251,7 @@ public class GameViewManager {
     private EngimonButton createButtonToSelect() {
         EngimonButton battleButton = new EngimonButton("SELECT");
         battleButton.setLayoutX(550);
-        battleButton.setLayoutY(200);
+        battleButton.setLayoutY(500);
 
         battleButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
