@@ -160,8 +160,8 @@ public class Player implements Serializable {
           return index;
      }
 
-     public void gainActiveEngimonExp(int exp) {
-          activeEngimon.gainExp(exp);
+     public String gainActiveEngimonExp(int exp) {
+          return activeEngimon.gainExp(exp);
      }
 
      public int getActiveEngiIndex() {

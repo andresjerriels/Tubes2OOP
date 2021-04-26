@@ -28,6 +28,7 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -661,6 +662,12 @@ public class GameViewManager {
                 currentlyActiveKeys.remove(event.getCode().toString());
             }
         });
+
+        gameScene.addEventFilter(KeyEvent.KEY_PRESSED, k -> {
+            if ( k.getCode() == KeyCode.SPACE){
+                k.consume();
+            }
+        });
     }
 
     private boolean removeActiveKey(String codeString) {
@@ -1083,7 +1090,9 @@ public class GameViewManager {
             battleStage.showAndWait();
 
             System.out.println(playerEngimon.getName() + " won!");
-            player.gainActiveEngimonExp(20 * chosenWildEngimon.getLevel());
+            showMessageSubscene(player.gainActiveEngimonExp(20 * chosenWildEngimon.getLevel()));
+            battleStage.showAndWait();
+
             showMessageSubscene("You captured a " + chosenWildEngimon.getSpecies());
             battleStage.showAndWait();
 
