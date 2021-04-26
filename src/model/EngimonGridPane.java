@@ -27,6 +27,19 @@ public class EngimonGridPane extends GridPane {
         return null;
     }
 
+    public Node replaceMapWithNode(final int column, final int row, Node other) {
+        ObservableList<Node> children = getChildren();
+        
+        for (Node node : children) {
+            if (getRowIndex(node) == row && getColumnIndex(node) == column) {
+                getChildren().remove(node);
+                add(other, column, row);
+                return node;
+            }
+        }
+        return null;
+    }
+
     public void replaceMapWithNode(Node other) {
         ObservableList<Node> children = getChildren();
         int row = getRowIndex(other);
