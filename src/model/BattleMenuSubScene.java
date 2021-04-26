@@ -14,11 +14,11 @@ public class BattleMenuSubScene extends SubScene {
     private boolean isHidden;
 
     public BattleMenuSubScene() {
-        super(new AnchorPane(), 600, 600);
-        prefWidth(600);
+        super(new AnchorPane(), 800, 600);
+        prefWidth(800);
         prefHeight(600);
 
-        BackgroundImage image = new BackgroundImage(new Image(BACKGROUND_IMAGE, 600, 600, false, true),
+        BackgroundImage image = new BackgroundImage(new Image(BACKGROUND_IMAGE, 800, 600, false, true),
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, null);
 
         AnchorPane root2 = (AnchorPane) this.getRoot();
@@ -26,7 +26,7 @@ public class BattleMenuSubScene extends SubScene {
 
         isHidden = true;
         setLayoutX(1024);
-        setLayoutY(150);
+        setLayoutY(100);
     }
 
     public void moveSubScene() {
@@ -35,7 +35,7 @@ public class BattleMenuSubScene extends SubScene {
         transition.setNode(this);
 
         if (isHidden) {
-            transition.setToX(-676);
+            transition.setToX(-900);
             isHidden = false;
         } else {
             transition.setToX(0);

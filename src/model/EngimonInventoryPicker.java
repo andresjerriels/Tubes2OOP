@@ -2,7 +2,7 @@ package model;
 
 import game.Engimon.Engimon;
 
-public class EngimonInventoryPicker extends EngimonStarterPicker {
+public class EngimonInventoryPicker extends EngimonPicker {
     EngimonInventoryItem engiItem;
 
     public EngimonInventoryPicker(Engimon engimon, int idx) {

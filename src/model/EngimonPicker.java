@@ -5,8 +5,9 @@ import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
-public class EngimonStarterPicker extends VBox {
+public class EngimonPicker extends VBox {
 
     protected ImageView circleImage;
     private ImageView engimonImage;
@@ -17,11 +18,12 @@ public class EngimonStarterPicker extends VBox {
     private Engimon engimon;
     private boolean isCircleChosen;
 
-    public EngimonStarterPicker(Engimon engimon) {
+    public EngimonPicker(Engimon engimon) {
         circleImage = new ImageView(circleNotChosen);
         engimonImage = engimon.getSprite();
         this.engimon = engimon;
         isCircleChosen = false;
+
         this.setAlignment(Pos.CENTER);
         this.setSpacing(20);
         this.getChildren().add(circleImage);
