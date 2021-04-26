@@ -22,7 +22,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import model.EngimonButton;
-import model.EngimonStarterPicker;
+import model.EngimonPicker;
 import model.InfoLabel;
 import model.MainMenuSubScene;
 
@@ -44,7 +44,7 @@ public class ViewManager {
     private MainMenuSubScene helpSubScene;
 
     List<EngimonButton> menuButtons;
-    List<EngimonStarterPicker> engimonStartersList;
+    List<EngimonPicker> engimonStartersList;
     private Engimon chosenEngimon;
 
     public ViewManager() {
@@ -90,8 +90,8 @@ public class ViewManager {
         box.setSpacing(20);
         engimonStartersList = new ArrayList<>();
         try {
-            engimonStartersList.add(new EngimonStarterPicker(EngimonFactory.createEngimon("Charmamon", 0)));
-            engimonStartersList.add(new EngimonStarterPicker(EngimonFactory.createEngimon("Pikamon", 1)));
+            engimonStartersList.add(new EngimonPicker(EngimonFactory.createEngimon("Charmamon", 0)));
+            engimonStartersList.add(new EngimonPicker(EngimonFactory.createEngimon("Pikamon", 1)));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -100,12 +100,12 @@ public class ViewManager {
         engimonStartersList.get(0).setIsCircleChosen(true);
         chosenEngimon = engimonStartersList.get(0).getEngimon();
 
-        for (EngimonStarterPicker engimonPicker : engimonStartersList) {
+        for (EngimonPicker engimonPicker : engimonStartersList) {
             box.getChildren().add(engimonPicker);
             engimonPicker.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
-                    for (EngimonStarterPicker engimonPicker : engimonStartersList) {
+                    for (EngimonPicker engimonPicker : engimonStartersList) {
                         engimonPicker.setIsCircleChosen(false);
                     }
                     engimonPicker.setIsCircleChosen(true);

@@ -14,22 +14,31 @@ import game.Player.Player;
 import game.Save.ResourceManager;
 import game.Save.SaveData;
 import game.Skill.SkillItem;
+import game.Skill.InvalidSkillNameException;
+import game.Skill.SkillItem;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
+import javafx.scene.text.Text;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import model.*;
+
+import static game.Engimon.EngimonFactory.createEngimon;
 import model.EngiDetailSubscene;
 import model.EngimonInventoryPicker;
 import model.EngimonButton;
@@ -84,6 +93,17 @@ public class GameViewManager {
     private EngiDetailSubscene engiDetailSubscene;
 
     // private GridPane engiGrid;
+
+    // Battle Variables
+    private BattleMenuSubScene wildEngimonChooserSubScene;
+    private BattleMenuSubScene battleSubScene;
+    private List<WildEngimonPicker> wildEngimonList;
+    private List<EngimonInfo> battleEngimon;
+    private Engimon chosenWildEngimon;
+    private ArrayList<Tile> aroundTiles;
+    private Tile tileWithEngimon;
+    private GameMenuSubScene messageSubScene;
+    private InfoLabel messageLabel;
 
     private InfoLabel infoLabel;
 
@@ -168,7 +188,7 @@ public class GameViewManager {
         engiDetailSubscene = new EngiDetailSubscene();
         gamePane.getChildren().add(engiDetailSubscene);
         engiDetailSubscene.setVisible(false);
-        
+
         createInfoSubscene();
     }
 
@@ -198,7 +218,7 @@ public class GameViewManager {
         EngimonLearnScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
         HBox EngimonLearnHBox = new HBox();
-        
+
         for (int i = 0; i < player.getInventoryEngimon().countItemInInventory(); i++) {
             EngimonInventoryPicker e = new EngimonInventoryPicker(player.getEngiRefFromIndex(i), i);
             e.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -326,7 +346,7 @@ public class GameViewManager {
         parentAScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
         HBox parentAHBox = new HBox();
-        
+
         for (int i = 0; i < player.getInventoryEngimon().countItemInInventory(); i++) {
 
             EngimonInventoryPicker e = new EngimonInventoryPicker(player.getEngiRefFromIndex(i), i);
@@ -370,7 +390,7 @@ public class GameViewManager {
         parentBScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
         HBox parentBHBox = new HBox();
-        
+
         for (int i = 0; i < player.getInventoryEngimon().countItemInInventory(); i++) {
 
             EngimonInventoryPicker e = new EngimonInventoryPicker(player.getEngiRefFromIndex(i), i);
@@ -439,7 +459,7 @@ public class GameViewManager {
         skillsScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
         GridPane skillsGrid = new GridPane();
-        
+
         for (int i = 0; i < player.getInventorySkill().countItemInInventory(); i++) {
             SkillInventoryItem e = new SkillInventoryItem(player.getInventorySkill().getContainer().get(i));
 
@@ -828,36 +848,24 @@ public class GameViewManager {
             player.setImgUrl(PLAYER_LEFT);
             map.move("a");
             refreshMap();
-//            if (player.getLayoutX() > 0) {
-//                player.setLayoutX(player.getLayoutX() - 10);
-//            }
         }
 
         if (removeActiveKey("D")) {
             player.setImgUrl(PLAYER_RIGHT);
             map.move("d");
             refreshMap();
-//            if (player.getLayoutX() < 994) {
-//                player.setLayoutX(player.getLayoutX() + 10);
-//            }
         }
 
         if(removeActiveKey("W")) {
             player.setImgUrl(PLAYER_UP);
             map.move("w");
             refreshMap();
-//            if (player.getLayoutY() > 0) {
-//                player.setLayoutY(player.getLayoutY() - 10);
-//            }
         }
 
         if (removeActiveKey("S")) {
             player.setImgUrl(PLAYER_DOWN);
             map.move("s");
             refreshMap();
-//            if (player.getLayoutY() < 728) {
-//                player.setLayoutY(player.getLayoutY() + 10);
-//            }
         }
 
         if (removeActiveKey("I")) {
@@ -873,9 +881,12 @@ public class GameViewManager {
                 infoSubScene.setVisible(true);
             }
         }
-        
-    }
 
+        if (removeActiveKey("B")) {
+            battle();
+        }
+
+    }
     private void refreshMap() {
         gridPane2.getChildren().clear();
 
@@ -946,5 +957,280 @@ public class GameViewManager {
             }
         }
         gamePane.getChildren().add(gridPane2);
+    }
+
+    private void createBattleSubScene() {
+        battleSubScene = new BattleMenuSubScene();
+        gamePane.getChildren().add(battleSubScene);
+        battleSubScene.moveSubScene();
+
+        InfoLabel battleLabel = new InfoLabel("LET'S BATTLE!");
+        battleLabel.setLayoutX(25);
+        battleLabel.setLayoutX(25);
+        battleSubScene.getPane().getChildren().add(battleLabel);
+        battleSubScene.getPane().getChildren().add(createBattleInfo());
+        battleSubScene.getPane().getChildren().add(createButtonToBattle());
+        battleSubScene.getPane().getChildren().add(createButtonToRun());
+    }
+
+    private HBox createBattleInfo() {
+        HBox box = new HBox();
+        box.setSpacing(60);
+        battleEngimon = new ArrayList<>();
+
+        try {
+            battleEngimon.add(new EngimonInfo(chosenWildEngimon, player.getActiveEngimon()));
+            battleEngimon.add(new EngimonInfo(player.getActiveEngimon(), chosenWildEngimon));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        box.getChildren().add(battleEngimon.get(0));
+        Text vs = new Text("\n\n\n\n\nVS");
+        box.getChildren().add(vs);
+        box.getChildren().add(battleEngimon.get(1));
+        box.setLayoutX(350 - (118 * 2));
+        box.setLayoutY(75);
+        return box;
+    }
+
+    private void battle() throws Exception {
+        if (player.getActiveEngimon() != null) {
+            try {
+                battleConfirmation();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        } else {
+            if (infoSubScene.isVisible()) {
+                infoSubScene.setVisible(false);
+            } else {
+                infoLabel.setText("Cannot battle with no active engimon");
+                infoSubScene.setVisible(true);
+            }
+            throw new Exception("Cannot battle with no active engimon");
+        }
+    }
+
+    private void battleConfirmation() throws Exception {
+        aroundTiles = map.getTilesWithEngimonAroundPlayer();
+        System.out.println(aroundTiles.size());
+
+        if (aroundTiles.size() == 0) {
+            if (infoSubScene.isVisible()) {
+                infoSubScene.setVisible(false);
+            } else {
+                infoLabel.setText("There's no engimon around you");
+                infoSubScene.setVisible(true);
+            }
+            throw new Exception("There's no engimon around you");
+        }
+
+        if (aroundTiles.size() > 1) {
+            createWildEngimonChooserSubScene();
+        } else {
+            chosenWildEngimon = aroundTiles.get(0).getWildEngimon();
+            createBattleSubScene();
+        }
+    }
+
+    private void continueBattle() {
+        Engimon playerEngimon = player.getActiveEngimon();
+
+        double playerPowerLevel = playerEngimon.getPowerLevel(chosenWildEngimon);
+        double wildPowerLevel = chosenWildEngimon.getPowerLevel(playerEngimon);
+
+        if (playerPowerLevel >= wildPowerLevel) {
+            // win
+            String engiName;
+            showMessageSubscene(playerEngimon.getName() + " won!");
+            System.out.println(playerEngimon.getName() + " won!");
+            player.gainActiveEngimonExp(20 * chosenWildEngimon.getLevel());
+            showMessageSubscene("Wou captured a " + chosenWildEngimon.getSpecies());
+
+//            TextInputDialog td = new TextInputDialog("");
+//            td.setHeaderText("Enter your new Engimon's name: ");
+//            td.showAndWait();
+//
+//            engiName = td.getEditor().getText();
+            chosenWildEngimon.setName("Test");
+            chosenWildEngimon.setLives(3);
+            String newSkillName = chosenWildEngimon.getSkills().get(0).getName();
+            showMessageSubscene("You get a skill item: " + newSkillName);
+
+            try {
+                player.addToInvSkill(new SkillItem(1, newSkillName));
+            } catch (InvalidSkillNameException e) {
+                e.printStackTrace();
+            }
+            player.addToInvEngimon(chosenWildEngimon);
+            tileWithEngimon.nullifyWildEngimon();
+            map.decrementWildEngimon();
+
+            if (playerEngimon.getCumExp() > 4000) {
+                showMessageSubscene("Your Engimon's cumulative EXP has reached its limit!");
+                player.removeEngimonByIndex(player.getActiveEngiIndex());
+
+                if (player.getInventoryEngimon().countItemInInventory() > 0) {
+                    player.setActiveEngimonNull();
+                } else {
+                    showMessageSubscene("You don't have any Engimons left");
+                    showMessageSubscene("GAME OVER! Thank you for playing with us!");
+                    gameStage.close();
+                    menuStage.show();
+                }
+            }
+
+        } else {
+            // lose
+            showMessageSubscene(chosenWildEngimon.getName() + " won! Your engimon was defeated!");
+
+            if (playerEngimon.die()) {
+                showMessageSubscene("Your Engimon has no lives left");
+                player.removeEngimonByIndex(player.getActiveEngiIndex());
+                player.setActiveEngimonNull();
+
+                if (player.getInventoryEngimon().countItemInInventory() == 0) {
+                    showMessageSubscene("You don't have any Engimons left");
+                    showMessageSubscene("GAME OVER! Thank you for playing with us!");
+                    gameStage.close();
+                    menuStage.show();
+                }
+            } else {
+                showMessageSubscene("Your Engimon has " + playerEngimon.getLives() + " live(s) left");
+            }
+
+        }
+        battleSubScene.moveSubScene();
+    }
+
+    private void createWildEngimonChooserSubScene() {
+        wildEngimonChooserSubScene = new BattleMenuSubScene();
+        gamePane.getChildren().add(wildEngimonChooserSubScene);
+        wildEngimonChooserSubScene.moveSubScene();
+
+        InfoLabel chooseWildEngimonLabel = new InfoLabel("CHOOSE A WILD ENGIMON");
+        chooseWildEngimonLabel.setLayoutX(25);
+        chooseWildEngimonLabel.setLayoutX(25);
+        wildEngimonChooserSubScene.getPane().getChildren().add(chooseWildEngimonLabel);
+        wildEngimonChooserSubScene.getPane().getChildren().add(createWildEngimonsToChoose());
+        wildEngimonChooserSubScene.getPane().getChildren().add(createButtonToSelect());
+    }
+
+    private void createMessageSubscene() {
+        messageSubScene = new GameMenuSubScene();
+        messageSubScene.setSize(600, 150);
+        messageSubScene.setLayoutX(GAME_WIDTH/5);
+        messageSubScene.setLayoutY(GAME_HEIGHT/5);
+        messageLabel = new InfoLabel("");
+        messageLabel.setFontSize(12);
+        messageLabel.setLayoutX(25);
+        messageLabel.setLayoutY(25);
+        messageSubScene.getPane().getChildren().add(messageLabel);
+
+        EngimonButton OKButton = new EngimonButton("OK");
+        OKButton.setLayoutX(200);
+        OKButton.setLayoutY(85);
+
+        OKButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                messageSubScene.setVisible(false);
+            }
+        });
+        messageSubScene.getPane().getChildren().add(OKButton);
+
+        gamePane.getChildren().add(messageSubScene);
+        messageSubScene.setVisible(false);
+    }
+
+    private void showMessageSubscene(String message) {
+        if (messageSubScene.isVisible()) {
+            messageSubScene.setVisible(false);
+        } else {
+            messageLabel.setText(message);
+            messageSubScene.setVisible(true);
+        }
+    }
+
+    private HBox createWildEngimonsToChoose() {
+        HBox box = new HBox();
+        box.setSpacing(60);
+        wildEngimonList = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < aroundTiles.size(); i++) {
+                wildEngimonList.add(new WildEngimonPicker(player.getActiveEngimon(), aroundTiles.get(i).getWildEngimon()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Default choice
+        wildEngimonList.get(0).setIsCircleChosen(true);
+        chosenWildEngimon = wildEngimonList.get(0).getEngimon();
+        tileWithEngimon = aroundTiles.get(0);
+
+        for (WildEngimonPicker engimonPicker : wildEngimonList) {
+            box.getChildren().add(engimonPicker);
+            engimonPicker.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    for (WildEngimonPicker engimonPicker : wildEngimonList) {
+                        engimonPicker.setIsCircleChosen(false);
+                    }
+                    engimonPicker.setIsCircleChosen(true);
+                    chosenWildEngimon = engimonPicker.getEngimon();
+                    tileWithEngimon = aroundTiles.get(wildEngimonList.indexOf(engimonPicker));
+                }
+            });
+        }
+        box.setLayoutX(300 - (118 * 2));
+        box.setLayoutY(75);
+        return box;
+    }
+
+    private EngimonButton createButtonToSelect() {
+        EngimonButton battleButton = new EngimonButton("SELECT");
+        battleButton.setLayoutX(550);
+        battleButton.setLayoutY(200);
+
+        battleButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                wildEngimonChooserSubScene.moveSubScene();
+                createBattleSubScene();
+            }
+        });
+        return battleButton;
+    }
+
+    private EngimonButton createButtonToBattle() {
+        EngimonButton battleButton = new EngimonButton("BATTLE");
+        battleButton.setLayoutX(300);
+        battleButton.setLayoutY(500);
+
+        battleButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                createMessageSubscene();
+                continueBattle();
+            }
+        });
+        return battleButton;
+    }
+
+    private EngimonButton createButtonToRun() {
+        EngimonButton battleButton = new EngimonButton("RUN");
+        battleButton.setLayoutX(550);
+        battleButton.setLayoutY(500);
+
+        battleButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                battleSubScene.moveSubScene();
+            }
+        });
+        return battleButton;
     }
 }
