@@ -104,6 +104,7 @@ public class GameViewManager {
     private Tile tileWithEngimon;
     private GameMenuSubScene messageSubScene;
     private InfoLabel messageLabel;
+    private Stage battleStage;
 
     private InfoLabel infoLabel;
 
@@ -130,25 +131,26 @@ public class GameViewManager {
         player = new Player(chosenEngimon);
         map = new Peta("./src/game/files/map.txt", player);
         player.setActiveEngimon(0);
+        player.gainActiveEngimonExp(2000);
         // player.addToInvSkill(new SkillItem(1, "Storm Hammer"));
         // player.addToInvSkill(new SkillItem(3, "Ice Spike"));
         // player.addToInvSkill(new SkillItem(2, "Mud Storm"));
         // player.addToInvSkill(new SkillItem(2, "Rock Throw"));
-        player.addToInvSkill(new SkillItem(1, "Mud Storm"));
+//        player.addToInvSkill(new SkillItem(1, "Mud Storm"));
         // player.addToInvSkill(new SkillItem(2, "Surf Wave"));
         // player.addToInvSkill(new SkillItem(2, "Hydro Cannon"));
         // player.addToInvSkill(new SkillItem(1, "Flame Punch"));
-        Engimon e = EngimonFactory.createEngimon("3", "Dittimon");
-        e.setLevel(10);
-        player.addToInvEngimon(e);
-        Engimon e2 = EngimonFactory.createEngimon("4", "Dittimon");
-        e2.setLevel(10);
-        player.addToInvEngimon(e2);
-        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
-        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+//        Engimon e = EngimonFactory.createEngimon("3", "Dittimon");
+//        e.setLevel(10);
+//        player.addToInvEngimon(e);
+//        Engimon e2 = EngimonFactory.createEngimon("4", "Dittimon");
+//        e2.setLevel(10);
+//        player.addToInvEngimon(e2);
+//        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+//        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+//        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+//        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
+//        player.addToInvEngimon(EngimonFactory.createEngimon("3", "Dittimon"));
         createBackground();
         createMap();
         createPlayer();
@@ -1029,6 +1031,7 @@ public class GameViewManager {
         if (aroundTiles.size() > 1) {
             createWildEngimonChooserSubScene();
         } else {
+            tileWithEngimon = aroundTiles.get(0);
             chosenWildEngimon = aroundTiles.get(0).getWildEngimon();
             createBattleSubScene();
         }
@@ -1044,19 +1047,23 @@ public class GameViewManager {
             // win
             String engiName;
             showMessageSubscene(playerEngimon.getName() + " won!");
+            battleStage.showAndWait();
+
             System.out.println(playerEngimon.getName() + " won!");
             player.gainActiveEngimonExp(20 * chosenWildEngimon.getLevel());
-            showMessageSubscene("Wou captured a " + chosenWildEngimon.getSpecies());
+            showMessageSubscene("You captured a " + chosenWildEngimon.getSpecies());
+            battleStage.showAndWait();
 
-//            TextInputDialog td = new TextInputDialog("");
-//            td.setHeaderText("Enter your new Engimon's name: ");
-//            td.showAndWait();
-//
-//            engiName = td.getEditor().getText();
-            chosenWildEngimon.setName("Test");
+            TextInputDialog td = new TextInputDialog("");
+            td.setHeaderText("Enter your new Engimon's name: ");
+            td.showAndWait();
+
+            engiName = td.getEditor().getText();
+            chosenWildEngimon.setName(engiName);
             chosenWildEngimon.setLives(3);
             String newSkillName = chosenWildEngimon.getSkills().get(0).getName();
             showMessageSubscene("You get a skill item: " + newSkillName);
+            battleStage.showAndWait();
 
             try {
                 player.addToInvSkill(new SkillItem(1, newSkillName));
@@ -1069,13 +1076,16 @@ public class GameViewManager {
 
             if (playerEngimon.getCumExp() > 4000) {
                 showMessageSubscene("Your Engimon's cumulative EXP has reached its limit!");
+                battleStage.showAndWait();
                 player.removeEngimonByIndex(player.getActiveEngiIndex());
 
                 if (player.getInventoryEngimon().countItemInInventory() > 0) {
                     player.setActiveEngimonNull();
                 } else {
                     showMessageSubscene("You don't have any Engimons left");
+                    battleStage.showAndWait();
                     showMessageSubscene("GAME OVER! Thank you for playing with us!");
+                    battleStage.showAndWait();
                     gameStage.close();
                     menuStage.show();
                 }
@@ -1083,21 +1093,29 @@ public class GameViewManager {
 
         } else {
             // lose
+
             showMessageSubscene(chosenWildEngimon.getName() + " won! Your engimon was defeated!");
+            battleStage.showAndWait();
 
             if (playerEngimon.die()) {
                 showMessageSubscene("Your Engimon has no lives left");
+                battleStage.showAndWait();
+
                 player.removeEngimonByIndex(player.getActiveEngiIndex());
                 player.setActiveEngimonNull();
 
                 if (player.getInventoryEngimon().countItemInInventory() == 0) {
                     showMessageSubscene("You don't have any Engimons left");
+                    battleStage.showAndWait();
+//
                     showMessageSubscene("GAME OVER! Thank you for playing with us!");
+                    battleStage.showAndWait();
                     gameStage.close();
                     menuStage.show();
                 }
             } else {
                 showMessageSubscene("Your Engimon has " + playerEngimon.getLives() + " live(s) left");
+                battleStage.showAndWait();
             }
 
         }
@@ -1136,6 +1154,7 @@ public class GameViewManager {
             @Override
             public void handle(ActionEvent event) {
                 messageSubScene.setVisible(false);
+                battleStage.hide();
             }
         });
         messageSubScene.getPane().getChildren().add(OKButton);
@@ -1213,6 +1232,10 @@ public class GameViewManager {
         battleButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                battleStage = new Stage();
+                battleStage.setOpacity(0);
+                battleStage.setX(0);
+                battleStage.setY(0);
                 createMessageSubscene();
                 continueBattle();
             }
