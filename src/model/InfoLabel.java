@@ -1,7 +1,5 @@
 package model;
 
-
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -11,7 +9,6 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.text.Font;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 

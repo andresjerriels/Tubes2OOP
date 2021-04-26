@@ -8,16 +8,18 @@ import java.util.List;
 import game.Engimon.Element;
 import game.Engimon.Engimon;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-public class EngiDetailSubscene extends GameMenuSubScene {
+public class EngimonDetailSubscene extends GameMenuSubScene {
     private Engimon engimon;
     public EngimonGameButton renameButton;
     public EngimonGameButton releaseButton;
@@ -26,7 +28,7 @@ public class EngiDetailSubscene extends GameMenuSubScene {
     public TextField renameField;
     private List<EngimonGameButton> buttons;
 
-    public EngiDetailSubscene() {
+    public EngimonDetailSubscene() {
         super();
 
         // setAlwaysOnTop(true);
@@ -111,35 +113,54 @@ public class EngiDetailSubscene extends GameMenuSubScene {
         skillsGrid.setLayoutX(258);
         skillsGrid.setLayoutY(32);
         for (int i = 0; i < e.getSkills().size(); i++) {
-            VBox skillBox = new VBox();
+            HBox skillBox = new HBox();
+
+            StackPane skillImgPane = new StackPane();
+            skillImgPane.setPrefWidth(100);
+            skillImgPane.setPrefHeight(100);
+
+            ImageView skillImg = e.getSkills().get(i).getSprite();
+            skillImg.setFitWidth(75);
+            skillImg.setFitHeight(75);
+            StackPane.setMargin(skillImg, new Insets(0, 0, 10, 0));
+
+            skillImgPane.getChildren().add(skillImg);
+
+            VBox detailBox = new VBox();
+            detailBox.setPrefHeight(100);
             Label skillname = new Label(e.getSkills().get(i).getName());
             Label bp = new Label("BP: " + Integer.toString(e.getSkills().get(i).getBasePower()));
-            Label mastery = new Label("Mastery: " + Integer.toString(e.getSkills().get(i).getMastery()));
+
+            ImageView mastery = e.getSkills().get(i).getMasterySprite();
+            mastery.setFitHeight(28);
+            mastery.setFitWidth(28);
+            
             HBox elmtBox = new HBox();
 
             try {
                 skillname.setFont(Font.loadFont(new FileInputStream("src/model/resources/kenvector_future.ttf"), 14));
                 bp.setFont(Font.loadFont(new FileInputStream("src/model/resources/kenvector_future.ttf"), 14));
-                mastery.setFont(Font.loadFont(new FileInputStream("src/model/resources/kenvector_future.ttf"), 14));
             } catch (FileNotFoundException err) {
                 skillname.setFont(Font.font("Verdana", 14));
                 bp.setFont(Font.font("Verdana", 14));
-                mastery.setFont(Font.font("Verdana", 14));
             }
 
             for (String element : e.getSkills().get(i).getSkillElements()) {
                 ImageView logo = new ImageView(Element.fromName(element).getImageUrl());
-                logo.setFitHeight(25);
-                logo.setFitWidth(25);
+                logo.setFitHeight(28);
+                logo.setFitWidth(28);
                 elmtBox.getChildren().add(logo);
             }
 
+            detailBox.getChildren().add(skillname);
+            detailBox.getChildren().add(bp);
+            detailBox.getChildren().add(mastery);
+            detailBox.getChildren().add(elmtBox);
+            
             skillBox.setPrefWidth(308);
             skillBox.setPrefHeight(100);
-            skillBox.getChildren().add(skillname);
-            skillBox.getChildren().add(bp);
-            skillBox.getChildren().add(mastery);
-            skillBox.getChildren().add(elmtBox);
+            skillBox.getChildren().add(skillImgPane);
+            skillBox.getChildren().add(detailBox);
 
             skillsGrid.add(skillBox, i % 2 , i / 2);
         }

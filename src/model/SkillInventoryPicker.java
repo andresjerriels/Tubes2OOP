@@ -21,7 +21,7 @@ public class SkillInventoryPicker extends VBox {
     public SkillInventoryPicker(SkillItem s, int i) {
         index = i;
         circleImage = new ImageView(circleNotChosen);
-        this.skillitem = new SkillInventoryItem(s);
+        this.skillitem = new SkillInventoryItem(s, i, false);
         isCircleChosen = false;
         this.setAlignment(Pos.CENTER);
         this.setSpacing(5);

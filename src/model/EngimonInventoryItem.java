@@ -22,12 +22,19 @@ public class EngimonInventoryItem extends StackPane {
         ImageView engi = e.getSprite();
         engi.setLayoutX(0);
         engi.setLayoutY(0);
-        engi.setFitWidth(110);
-        engi.setFitHeight(110);
+        engi.setFitWidth(100);
+        engi.setFitHeight(100);
+        this.getChildren().add(engi);
 
         Text name = new Text(e.getName());
+        StackPane.setMargin(name, new Insets(0, 0, 2, 0));
+        StackPane.setAlignment(name, Pos.BOTTOM_CENTER);
+        this.getChildren().add(name);
+
         Text lvl = new Text(Integer.toString(e.getLevel()));
         StackPane.setMargin(lvl, new Insets(5, 15, 0, 0));
+        StackPane.setAlignment(lvl, Pos.TOP_RIGHT);
+        this.getChildren().add(lvl);
 
         VBox elements = new VBox();
 
@@ -37,6 +44,8 @@ public class EngimonInventoryItem extends StackPane {
             logo.setFitWidth(25);
             elements.getChildren().add(logo);
         }
+        StackPane.setAlignment(elements, Pos.TOP_LEFT);
+        this.getChildren().add(elements);
 
         if (active) {
             ImageView activeLogo = new ImageView("view/resources/active.png");
@@ -46,13 +55,6 @@ public class EngimonInventoryItem extends StackPane {
             StackPane.setAlignment(activeLogo, Pos.TOP_CENTER);
         }
         
-        this.getChildren().add(engi);
-        this.getChildren().add(name);
-        this.getChildren().add(lvl);
-        this.getChildren().add(elements);
-        StackPane.setAlignment(name, Pos.BOTTOM_CENTER);
-        StackPane.setAlignment(lvl, Pos.TOP_RIGHT);
-        StackPane.setAlignment(elements, Pos.TOP_LEFT);
     }
 
     public int getIndex() {
