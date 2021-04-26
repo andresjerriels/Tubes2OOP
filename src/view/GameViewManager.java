@@ -857,8 +857,6 @@ public class GameViewManager {
                 }
             }
         }
-
-        map.PrintPeta();
     }
 
     private void createPlayer() {
@@ -925,7 +923,6 @@ public class GameViewManager {
                 if (player.getActiveEngimon() != null) {
                     infoLabel.setText(player.getActiveEngimon().interact());
                 } else {
-                    System.out.println("You don't have an active engimon right now");
                     infoLabel.setText("You don't have an active engimon right now");
                 }
                 infoSubScene.setVisible(true);
@@ -1063,8 +1060,6 @@ public class GameViewManager {
 
     private void battleConfirmation() throws Exception {
         aroundTiles = map.getTilesWithEngimonAroundPlayer();
-        System.out.println(aroundTiles.size());
-
         if (aroundTiles.size() == 0) {
             if (infoSubScene.isVisible()) {
                 infoSubScene.setVisible(false);
@@ -1097,7 +1092,6 @@ public class GameViewManager {
             showMessageSubscene(playerEngimon.getName() + " won!");
             battleStage.showAndWait();
 
-            System.out.println(playerEngimon.getName() + " won!");
             showMessageSubscene(player.gainActiveEngimonExp(20 * chosenWildEngimon.getLevel()));
             battleStage.showAndWait();
 
