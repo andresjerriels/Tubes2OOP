@@ -1,5 +1,6 @@
 package view;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.BattleMenuSubScene;
 import model.EngimonButton;
@@ -804,10 +806,16 @@ public class GameViewManager {
                 SaveData data = new SaveData();
                 data.map = map;
                 data.player = player;
+
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setInitialDirectory(new File("./"));
+                fileChooser.setTitle("Load .engi file");
+                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("engi file", "*.engi"));
                 try {
-                    ResourceManager.save(data, "saveData.engi");
-                    System.out.println("Game saved to saveData.engi");
-                    showInfo("Game saved to saveData.engi");
+                    File file = fileChooser.showSaveDialog(gameStage);
+                    ResourceManager.save(data, file.getAbsolutePath());
+                    System.out.println("Game saved to " + file.getAbsolutePath());
+                    showInfo("Game saved!");
                 } catch (Exception e) {
                     System.out.println("Tidak dapat melakukan save: "+ e.getMessage());
                 }

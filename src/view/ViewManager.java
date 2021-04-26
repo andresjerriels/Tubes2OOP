@@ -1,5 +1,6 @@
 package view;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
@@ -272,10 +274,20 @@ public class ViewManager {
             @Override
             public void handle(ActionEvent event) {
                 try {
-                    SaveData data = (SaveData) ResourceManager.load("saveData.engi");
-                    GameViewManager gameManager = new GameViewManager();
-                    parallelTransition.stop();
-                    gameManager.loadGame(mainStage, data);
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setInitialDirectory(new File("./"));
+                    fileChooser.setTitle("Load .engi file");
+                    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("engi file", "*.engi"));
+
+                    try {
+                        File file = fileChooser.showOpenDialog(mainStage);
+                        SaveData data = (SaveData) ResourceManager.load(file.getAbsolutePath());
+                        GameViewManager gameManager = new GameViewManager();
+                        parallelTransition.stop();
+                        gameManager.loadGame(mainStage, data);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } catch (Exception e) {
                     System.out.println("Tidak dapat melakukan load: "+e.getMessage());
                 }
