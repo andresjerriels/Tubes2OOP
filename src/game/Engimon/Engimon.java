@@ -309,7 +309,7 @@ public abstract class Engimon implements InventoryItem, Comparable<Engimon>, Ser
         return maxAdv;
     }
 
-    public void gainExp(int xp) {
+    public String gainExp(int xp) {
         cum_exp += xp;
       
         int newLvlAdd = (exp + xp) / 100;
@@ -318,7 +318,9 @@ public abstract class Engimon implements InventoryItem, Comparable<Engimon>, Ser
         level += newLvlAdd;
       
         if (newLvlAdd > 0) {
-            System.out.println(name + " Leveled up to level " + level);
+            return (name + " Leveled up to level " + level);
+        } else {
+            return (name + " gained " + xp + " exp");
         }
       }
 
